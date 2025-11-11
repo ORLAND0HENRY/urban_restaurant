@@ -1,0 +1,10 @@
+<footer class="bg-up-secondary text-up-light mt-auto py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p>&copy; {% now "Y" %} Orlantech Innovations. All rights reserved.</p>
+        <p class="mt-2 text-sm text-gray-400">Powered by Creativity & Passion.</p>
+        {% if user.is_staff %}
+        {# 🌟 FIX: Changed 'admin_dashboard' to the correct namespaced URL 'dashboard:overview' 🌟 #}
+        <p class="mt-2 text-xs text-up-primary"><a href="{% url 'dashboard:home' %}">Admin Dashboard</a></p>
+        {% endif %}
+    </div>
+</footer>

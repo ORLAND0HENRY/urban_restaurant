@@ -1,0 +1,39 @@
+=== CRITICAL SECURITY & ENVIRONMENT FILES ===
+
+Never commit your secret keys, environment variables, or development database.
+
+.env
+db.sqlite3
+
+=== PYTHON & VIRTUAL ENVIRONMENT ===
+
+The 'env' directory holds your virtual environment, which is unique to your machine.
+
+env/
+
+Byte-compiled Python files
+
+pycache/
+*.pyc
+*.pyo
+
+Packaging/Build files
+
+build/
+dist/
+*.egg-info/
+
+=== IDE & OS SPECIFIC FILES ===
+
+PyCharm/IntelliJ IDE
+
+.idea/
+
+Windows
+
+Thumbs.db
+desktop.ini
+
+macOS (Adding this just in case you ever share with Mac users)
+
+.DS_Store

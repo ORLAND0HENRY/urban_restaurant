@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<header class="relative overflow-hidden bg-up-light pt-10 pb-20 md:pb-32">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="z-10 text-center lg:text-left">
+                <h1 class="text-6xl md:text-7xl font-serif font-extrabold text-up-secondary leading-tight mb-4">
+                    The <span class="text-up-primary">Urban Palate</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-md lg:max-w-none mx-auto">
+                    Welcome! To your number one all-stop for all you can eat. We don't bite,but you will ; at our delicious menus!
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center lg:justify-start">
+                    <a href="{% url 'menu:menu_list' %}" class="bg-up-primary text-up-light py-3 px-8 rounded-lg text-lg font-semibold shadow-soft hover:shadow-lg transition duration-300 transform hover:scale-[1.02]">
+                        View Our Menu
+                    </a>
+                    <a href="{% url 'reservations:new_reservation' %}" class="border border-up-secondary text-up-secondary py-3 px-8 rounded-lg text-lg font-semibold hover:bg-up-secondary hover:text-up-light transition duration-300">
+                        Book a Table
+                    </a>
+                </div>
+            </div>
+
+            <div class="relative w-full h-80 md:h-96 lg:h-[500px] z-0">
+                <img src="{% static 'img/steak.jpg' %}" alt="Elegant grilled steak" class="object-cover w-full h-full rounded-2xl shadow-xl border-4 border-white transform rotate-3 hover:rotate-0 transition duration-500 ease-in-out">
+                <div class="absolute inset-0 bg-up-primary/10 rounded-2xl"></div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% load crispy_forms_field %}
+
+<div id="div_{{ field.auto_id }}" class="mb-6">
+    <label class="block text-sm font-semibold mb-2 text-up-secondary">{{ field.label }}</label>
+    {% for radio in field %}
+        <label for="{{ radio.id_for_label }}" class="inline-flex items-center p-3 mr-4 mb-2 bg-white rounded-lg shadow-soft cursor-pointer hover:bg-up-background transition duration-150">
+            <input type="radio"
+                   name="{{ radio.name }}"
+                   id="{{ radio.id_for_label }}"
+                   value="{{ radio.choice_value }}"
+                   {% if radio.is_checked %}checked{% endif %}
+                   class="form-radio text-up-primary h-4 w-4 border-gray-300 focus:ring-up-primary checked:bg-up-primary">
+            <span class="ml-2 text-sm font-medium text-up-secondary">{{ radio.choice_label }}</span>
+        </label>
+    {% endfor %}
+    {% include 'tailwind/field_errors.html' %}
+</div>

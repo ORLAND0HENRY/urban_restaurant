@@ -1,0 +1,43 @@
+[
+    {
+        "model": "menu.category",
+        "pk": 1,
+        "fields": {"name": "Starters", "slug": "starters"}
+    },
+    {
+        "model": "menu.category",
+        "pk": 2,
+        "fields": {"name": "Main Courses", "slug": "main-courses"}
+    },
+    {
+        "model": "menu.category",
+        "pk": 3,
+        "fields": {"name": "Desserts", "slug": "desserts"}
+    },
+    {
+        "model": "menu.category",
+        "pk": 4,
+        "fields": {"name": "Drinks", "slug": "drinks"}
+    },
+    {
+        "model": "menu.menuitem",
+        "pk": 1,
+        "fields": {"category": 1, "name": "Garlic Butter Prawns", "description": "Succulent prawns pan-seared in rich garlic butter.", "price": "950.00", "image": "placeholder_prawns.jpg"}
+    },
+    {
+        "model": "menu.menuitem",
+        "pk": 2,
+        "fields": {"category": 1, "name": "Crispy Chicken Wings", "description": "Marinated, deep-fried wings served with a tangy dip.", "price": "650.00", "image": "placeholder_wings.jpg"}
+    },
+    {
+        "model": "menu.menuitem",
+        "pk": 4,
+        "fields": {"category": 2, "name": "Grilled Steak with Mashed Potatoes", "description": "Tender beef steak, perfectly grilled and served with creamy mash.", "price": "1450.00", "image": "placeholder_steak.jpg"}
+    },
+    {
+        "model": "menu.menuitem",
+        "pk": 10,
+        "fields": {"category": 4, "name": "Fresh Passion Juice", "description": "Naturally sweet and tangy passion fruit juice.", "price": "250.00", "image": "placeholder_passion.jpg"}
+    }
+
+]

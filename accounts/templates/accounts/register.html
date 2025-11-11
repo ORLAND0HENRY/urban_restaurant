@@ -1,0 +1,48 @@
+<script src="https://cdn.tailwindcss.com"></script>
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-up-primary p-4" style="background-color: #f7f7f7;">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden transform transition duration-500 hover:shadow-blue-500/50">
+
+        <div class="bg-up-secondary text-white p-6 md:p-8 text-center rounded-t-xl" style="background-color: #3B82F6;">
+            <h1 class="text-3xl font-serif font-extrabold tracking-tight">Join Urban Palate</h1>
+            <p class="text-sm opacity-90 mt-1">Create your account and start ordering delicious food today.</p>
+        </div>
+
+        <div class="p-6 md:p-10">
+            {% if messages %}
+                <div class="mb-4 space-y-2">
+                    {% for message in messages %}
+                        <div class="p-3 text-sm rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700 border border-red-300{% else %}bg-green-100 text-green-700 border border-green-300{% endif %} shadow-sm" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                {{ form|crispy }}
+
+                <button type="submit"
+                        class="w-full bg-up-primary text-white font-semibold py-3 rounded-xl hover:bg-blue-600 transition duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-blue-500/50"
+                        style="background-color: #3B82F6;">
+                    Register Account
+                </button>
+            </form>
+
+            <div class="mt-8 text-center border-t pt-6">
+                <p class="text-gray-600 text-sm">
+                    Already have an account?
+                    <a href="{% url 'accounts:login' %}" class="text-up-secondary hover:text-up-primary font-semibold transition duration-200" style="color: #3B82F6;">
+                        Login here
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

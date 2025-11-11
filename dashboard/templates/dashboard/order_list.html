@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto max-w-7xl px-4 py-10">
+    <h1 class="text-4xl font-bold text-up-secondary mb-8">Manage Orders</h1>
+
+    <div class="bg-white shadow-lg rounded-xl overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placed At</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for order in orders %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{{ order.pk }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ order.customer_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-up-primary">
+                        {# 🌟 USES THE MODEL METHOD 🌟 #}
+                        KShs {{ order.get_total_cost|floatformat:2 }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                         {# Display colored status badge #}
+                        {% if order.status == 'PENDING' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">{{ order.get_status_display }}</span>
+                        {% elif order.status == 'PREPARING' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{{ order.get_status_display }}</span>
+                        {% elif order.status == 'COMPLETED' or order.status == 'READY' %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{{ order.get_status_display }}</span>
+                        {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">{{ order.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.get_payment_method_display }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.order_date|date:"M d, H:i" }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <form method="POST" action="{% url 'dashboard:update_order_status' order.pk %}" class="inline-flex space-x-2">
+                            {% csrf_token %}
+                            <select name="status" class="text-xs border-gray-300 rounded-md shadow-sm focus:border-up-primary focus:ring-up-primary">
+                                {# Dynamically list all status choices #}
+                                {% for key, display in order.STATUS_CHOICES %}
+                                    <option value="{{ key }}" {% if order.status == key %}selected{% endif %}>{{ display }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="text-up-secondary hover:text-up-primary text-xs font-medium border border-gray-300 rounded-md px-2 py-1">Update</button>
+                        </form>
+                        <a href="#" class="text-indigo-600 hover:text-indigo-900 ml-3">Details</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-6 py-4 text-center text-gray-500">No orders found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-soft">
+    <h2 class="text-3xl font-serif font-bold text-up-secondary mb-6 text-center">Login to Urban Palate</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="flex justify-between items-center mt-6">
+            <button type="submit" class="w-full bg-up-primary text-white py-3 rounded-lg text-lg font-semibold hover:bg-up-secondary transition duration-300">
+                Login
+            </button>
+        </div>
+    </form>
+    <p class="text-center text-gray-600 mt-4">
+        Need an account? <a href="{% url 'accounts:register' %}" class="text-up-primary hover:underline font-medium">Register here</a>.
+    </p>
+</div>
+{% endblock content %}

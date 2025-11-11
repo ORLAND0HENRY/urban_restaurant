@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto max-w-7xl px-4 py-10">
+    <h1 class="text-5xl font-serif font-extrabold text-up-secondary mb-12 text-center">
+        Explore Our Menu
+    </h1>
+
+    {% for category in categories %}
+        {% if category.items.all %}
+            <div class="mb-16">
+                <h2 class="text-4xl font-bold text-up-primary border-b-2 border-up-primary pb-2 mb-8">
+                    {{ category.name }}
+                </h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {% for item in category.items.all %}
+                        <div class="bg-white rounded-xl shadow-lg hover:shadow-xl
+                                    transition duration-300 overflow-hidden border border-up-light
+                                    flex flex-col">
+
+                            {# Image Container with fixed ASPECT RATIO for uniformity #}
+                            <div class="relative w-full aspect-video">
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}" alt="{{ item.name }}"
+                                         class="absolute inset-0 w-full h-full object-cover">
+                                {% else %}
+                                    <div class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 font-semibold">
+                                        [Image Placeholder]
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-2xl font-semibold text-up-secondary mb-2">{{ item.name }}</h3>
+                                <p class="text-gray-600 mb-4 text-sm flex-grow">{{ item.description|truncatechars:100 }}</p>
+
+                                <div class="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
+                                    <span class="text-2xl font-bold text-up-primary">
+                                        KShs {{ item.price|floatformat:2 }}
+                                    </span>
+
+                                    {# 🌟 FIX: Replaced <a> with a secure POST form for adding to cart 🌟 #}
+                                    <form method="post" action="{% url 'orders:add_to_cart' item.id %}" class="inline-flex">
+                                        {% csrf_token %}
+                                        {# Hidden input to send quantity=1 to the view #}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit"
+                                                class="bg-up-secondary text-white py-2 px-4 rounded-lg text-sm font-medium
+                                                       hover:bg-up-primary transition duration-300">
+                                            Add to Cart
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock content %}

@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if page_title %}{{ page_title }}{% else %}Urban Palate{% endif %}</title>
+
+    {# 🌟 FIX: Load Tailwind Utility Classes via CDN 🌟 #}
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    {# 🌟 FIX: Define your custom colors for Tailwind to recognize 🌟 #}
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                // These colors enable classes like text-up-primary and bg-up-secondary
+                'up-primary': '#a67c52',
+                'up-secondary': '#2c3e50',
+                'up-light': '#ecf0f1',
+                'up-background': '#f7f7f7',
+              },
+            }
+          }
+        }
+    </script>
+
+    {% load static %}
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+
+    </head>
+<body class="bg-up-background text-up-secondary font-sans min-h-screen flex flex-col">
+
+    {% include "partials/navbar.html" %}
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                {% comment %} Map Django message tags to Tailwind colors {% endcomment %}
+                <div class="p-4 mb-4 text-sm rounded-lg shadow-soft
+                    {% if message.tags == 'error' %}bg-red-100 text-red-700
+                    {% elif message.tags == 'success' %}bg-green-100 text-green-700
+                    {% else %}bg-blue-100 text-blue-700{% endif %}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <main class="flex-grow py-8 md:py-12">
+        {% block content %}
+        {% endblock content %}
+    </main>
+
+    {% include "partials/footer.html" %}
+
+    {% if include_pdf_js %}
+        <script src="{% static 'js/jspdf.umd.min.js' %}"></script>
+        <script src="{% static 'js/html2canvas.min.js' %}"></script>
+        <script src="{% static 'js/receipt_generator.js' %}"></script>
+    {% endif %}
+</body>
+</html>

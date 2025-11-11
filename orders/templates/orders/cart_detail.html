@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <h1 class="text-5xl font-serif font-bold text-up-secondary mb-10 border-b-2 pb-2">Your Shopping Cart</h1>
+
+    {% comment %} Check if the 'cart' object exists and has items {% endcomment %}
+    {% if cart and cart.items.all %}
+    
+        <!-- Cart Items List -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden divide-y divide-gray-100">
+            {% for item in cart.items.all %}
+            <div class="flex items-center justify-between p-6 hover:bg-gray-50 transition duration-150">
+
+                <div class="flex items-center space-x-4 flex-grow">
+                    <!-- Placeholder/Icon for Menu Item -->
+                    <div class="p-3 bg-up-primary/10 text-up-primary rounded-lg flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2-3-.895-3-2 1.343-2 3-2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v.01M12 20v.01M4.01 12H4M20.01 12H20M6.343 6.343l-.707-.707M18.364 18.364l-.707-.707M6.343 18.364l-.707.707M18.364 6.343l-.707.707"></path></svg>
+                    </div>
+
+                    <div>
+                        <p class="font-semibold text-lg text-gray-800">{{ item.menu_item.name }}</p>
+                        <p class="text-sm text-gray-500">
+                            Unit Price: KShs {{ item.menu_item.price|floatformat:2 }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-6 flex-shrink-0">
+
+                    <!-- Quantity Update Form -->
+                    <form method="post" action="{% url 'orders:update_cart_item' item.menu_item.id %}" class="flex items-center space-x-2">
+                        {% csrf_token %}
+                        <input type="number"
+                               name="quantity"
+                               value="{{ item.quantity }}"
+                               min="0"
+                               required
+                               class="w-16 p-2 border border-gray-300 rounded-lg text-center focus:ring-up-primary focus:border-up-primary transition duration-150 text-sm">
+
+                        <button type="submit"
+                                class="bg-up-primary text-white p-2 rounded-lg hover:bg-up-secondary transition duration-150 text-sm font-medium"
+                                title="Update Quantity">
+                            Update
+                        </button>
+                    </form>
+
+                    <!-- Line Total -->
+                    <p class="text-xl font-bold text-up-secondary w-24 text-right">KShs {{ item.get_line_total|floatformat:2 }}</p>
+
+                    <!-- Remove Item Button (Simplified) -->
+                    <form method="post" action="{% url 'orders:remove_from_cart' item.menu_item.id %}" class="inline-block flex-shrink-0">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition duration-150"
+                                title="Remove Item">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Cart Summary and Checkout Button -->
+        <div class="mt-8 p-8 bg-up-light/50 border-2 border-up-primary/20 rounded-xl shadow-inner">
+            <div class="flex justify-between items-center text-2xl font-semibold mb-4 text-gray-800">
+                <span>Subtotal ({{ cart.get_total_items }} unique items):</span>
+                {% comment %} Calling the Cart model method to get the total cart subtotal {% endcomment %}
+                <span class="text-up-secondary">KShs {{ cart.get_subtotal|floatformat:2 }}</span>
+            </div>
+
+            <p class="text-sm text-gray-500 mb-6">Taxes and delivery fees calculated at checkout.</p>
+
+            {% comment %} CHECKOUT LINK remains commented out {% endcomment %}
+            <a href="#"
+               class="block w-full text-center px-6 py-3 bg-gray-400 text-white font-semibold rounded-lg text-lg cursor-not-allowed">
+                Checkout (Feature Disabled)
+            </a>
+            
+            <a href="{% url 'menu:menu_list' %}" class="block w-full text-center mt-4 text-up-primary hover:text-up-secondary transition duration-200">
+                Continue Shopping
+            </a>
+        </div>
+
+    {% else %}
+        <!-- Empty Cart State -->
+        <div class="text-center p-12 bg-gray-50 border-dashed border-2 border-gray-300 rounded-xl">
+            <p class="text-3xl font-semibold text-gray-700 mb-4">Your cart is empty!</p>
+            <p class="text-lg text-gray-500 mb-8">It looks like you haven't added any dishes yet.</p>
+            <a href="{% url 'menu:menu_list' %}" 
+               class="inline-block px-6 py-3 bg-up-primary text-white font-semibold rounded-lg hover:bg-up-secondary transition duration-200">
+                Browse the Menu
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}
