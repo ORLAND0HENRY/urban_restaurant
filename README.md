@@ -49,7 +49,7 @@ python -m venv venv
 Bash
 
 pip install django django-environ
-# Or, if you have a requirements file:
+# Or, simply run
 # pip install -r requirements.txt
 4. Database & Launch
 Bash
