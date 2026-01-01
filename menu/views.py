@@ -73,4 +73,4 @@ def submit_review(request, item_id):
         else:
             messages.error(request, "Review form submission failed. Check your input.")
 
-    return redirect('menu:item_detail', pk=item_id)
+    return redirect('menu::menu_list_view')

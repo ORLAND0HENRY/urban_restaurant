@@ -1,0 +1,30 @@
+{% extends 'base.html' %} 
+
+{% block content %}
+    
+    <!-- This include is now safe because we added defensive checks in navbar.html -->
+    {% include 'navbar.html' %} 
+
+    <div class="flex flex-col items-center justify-center min-h-[calc(100vh-100px)] text-center p-6">
+        <!-- 404 Visual Header -->
+        <p class="text-9xl font-extrabold text-up-primary tracking-widest">404</p>
+        
+        <!-- Animated "Page Not Found" box -->
+        <div class="bg-up-secondary px-2 text-sm rounded-lg text-white rotate-12 absolute -mt-10">
+            Page Not Found
+        </div>
+        
+        <!-- Message -->
+        <h1 class="text-4xl font-bold mt-8 mb-4 text-gray-800">Oops! Looks like you're lost.</h1>
+        <p class="text-lg text-gray-600 mb-8 max-w-lg">
+            The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+        </p>
+        
+        <!-- Home Button -->
+        <a href="{% url 'home' %}" 
+           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-up-primary hover:bg-up-secondary transition duration-300">
+            Go to Homepage
+        </a>
+    </div>
+
+{% endblock content %}
