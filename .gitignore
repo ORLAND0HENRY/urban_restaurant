@@ -3,8 +3,7 @@ venv/
 .env
 
 # Django static/media
-staticfiles/
-media/
+
 
 # Python artifacts
 __pycache__/
