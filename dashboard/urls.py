@@ -3,10 +3,10 @@ from . import views
 
 app_name = 'dashboard'
 
-# This is the simplified URL pattern matching the single dashboard_view function.
 urlpatterns = [
-    # Customer Dashboard View (RENAMED from 'overview' to 'home')
+    # Main Dashboard
     path('', views.dashboard_view, name='home'),
 
-
+    # This MUST exist because your template 'admin_dashboard.html' calls it
+    path('reservations/', views.dashboard_view, name='reservation_list'),
 ]
