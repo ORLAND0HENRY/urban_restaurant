@@ -47,10 +47,7 @@ python -m venv venv
 # source venv/bin/activate
 3. Install Requirements
 Bash
-
-pip install django django-environ
-# Or, if you have a requirements file:
-# pip install -r requirements.txt
+pip install -r requirements.txt
 4. Database & Launch
 Bash
 
