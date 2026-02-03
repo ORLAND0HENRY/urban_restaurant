@@ -1,47 +1,92 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto py-10 px-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <h1 class="text-4xl font-extrabold text-gray-900 font-serif mb-8">
-        Admin Dashboard
-    </h1>
+    <header class="mb-12 flex justify-between items-end border-b border-up-secondary/10 pb-8">
+        <div>
+            <h1 class="text-5xl font-serif font-bold text-up-secondary tracking-tight">
+                Executive <span class="text-up-primary">Control</span>
+            </h1>
+            <p class="text-up-secondary/60 mt-2 italic">Operational Intelligence & Guest Management</p>
+        </div>
+        <div class="text-right">
+            <span class="text-[10px] text-up-primary font-black uppercase tracking-[0.2em]">System Status</span>
+            <p class="text-green-600 font-bold flex items-center gap-2 justify-end">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Live Oversight
+            </p>
+        </div>
+    </header>
 
-    <div class="bg-white shadow-xl rounded-xl p-6">
-        <h2 class="text-2xl font-bold mb-4">Reservations</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-up-secondary p-8 rounded-2xl shadow-lg">
+            <p class="text-[10px] font-black text-up-primary uppercase tracking-widest mb-1">Total Covers</p>
+            <h3 class="text-4xl font-bold text-up-light">{{ stats.total_covers|default:"0" }}</h3>
+        </div>
+        <div class="bg-white border border-up-secondary/10 p-8 rounded-2xl shadow-sm">
+            <p class="text-[10px] font-black text-up-secondary/40 uppercase tracking-widest mb-1">Avg Party Size</p>
+            <h3 class="text-4xl font-bold text-up-secondary">{{ stats.avg_guests|default:"0.0" }}</h3>
+        </div>
+        <div class="bg-white border border-up-secondary/10 p-8 rounded-2xl shadow-sm flex items-center justify-center">
+            <a href="{% url 'reservations:new_reservation' %}" class="text-up-primary font-black uppercase tracking-widest text-xs border-2 border-dashed border-up-primary/30 px-6 py-4 rounded-xl hover:bg-up-primary/5 transition-all">
+                + Manual Booking
+            </a>
+        </div>
+    </div>
 
-        <table class="min-w-full border-collapse">
-            <thead>
-                <tr class="bg-gray-100 border-b">
-                    <th class="px-4 py-2">Name</th>
-                    <th class="px-4 py-2">Date</th>
-                    <th class="px-4 py-2">Time</th>
-                    <th class="px-4 py-2">Guests</th>
-                    <th class="px-4 py-2">Status</th>
-                    <th class="px-4 py-2">Actions</th>
+    <div class="bg-white rounded-3xl shadow-sm border border-up-secondary/5 overflow-hidden">
+        <div class="px-8 py-6 border-b border-up-background">
+            <h2 class="text-sm font-black text-up-secondary uppercase tracking-[0.2em]">Live Reservation Stream</h2>
+        </div>
+
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-up-light/30 text-[10px] uppercase tracking-widest text-up-secondary/60">
+                <tr>
+                    <th class="px-8 py-4">Guest Identity</th>
+                    <th class="px-8 py-4 text-center">Schedule</th>
+                    <th class="px-8 py-4 text-center">Party</th>
+                    <th class="px-8 py-4 text-right">Management Actions</th>
                 </tr>
             </thead>
-
-            <tbody>
+            <tbody class="divide-y divide-up-secondary/5">
                 {% for r in reservations %}
-                <tr class="border-b">
-                    <td class="px-4 py-2">{{ r.name }}</td>
-                    <td class="px-4 py-2">{{ r.date }}</td>
-                    <td class="px-4 py-2">{{ r.time }}</td>
-                    <td class="px-4 py-2">{{ r.guests }}</td>
-                    <td class="px-4 py-2">{{ r.status }}</td>
-                    <td class="px-4 py-2">
-                        <a href="{% url 'dashboard:reservation_list' %}" class="text-up-primary font-semibold">Manage ›</a>
+                <tr class="hover:bg-up-background/30 transition-colors group">
+                    <td class="px-8 py-6">
+                        <span class="block font-bold text-up-secondary uppercase tracking-tight">{{ r.user.username|default:r.guest_name }}</span>
+                        <span class="text-[9px] text-up-primary font-mono italic">Ref: #00{{ r.id }}</span>
                     </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="px-4 py-4 text-center text-gray-500">No reservations found.</td>
+                    <td class="px-8 py-6 text-center">
+                        <span class="block text-sm font-medium">{{ r.date|date:"D, d M" }}</span>
+                        <span class="text-xs text-up-secondary/50 font-mono">{{ r.time }}</span>
+                    </td>
+                    <td class="px-8 py-6 text-center text-lg font-light">
+                        {{ r.party_size }}
+                    </td>
+                    <td class="px-8 py-6">
+                        <div class="flex items-center justify-end gap-4">
+                            <span class="text-[9px] font-black uppercase px-3 py-1 rounded border
+                                {% if r.status == 'CONFIRMED' %} border-green-200 text-green-700 bg-green-50
+                                {% elif r.status == 'PENDING' %} border-up-primary/30 text-up-primary bg-up-primary/5
+                                {% else %} border-gray-200 text-gray-400 bg-gray-50 {% endif %}">
+                                {{ r.status }}
+                            </span>
+
+                            {% if r.status == 'PENDING' %}
+                            <div class="flex gap-2">
+                                <a href="{% url 'dashboard:update_status' r.pk 'confirm' %}" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Confirm Booking">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                </a>
+                                <a href="{% url 'dashboard:update_status' r.pk 'cancel' %}" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Reject/Cancel">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
 </div>
 {% endblock %}

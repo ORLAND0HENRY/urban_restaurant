@@ -2,19 +2,85 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-soft">
-    <h2 class="text-3xl font-serif font-bold text-up-secondary mb-6 text-center">Login to Urban Palate</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <div class="flex justify-between items-center mt-6">
-            <button type="submit" class="w-full bg-up-primary text-white py-3 rounded-lg text-lg font-semibold hover:bg-up-secondary transition duration-300">
-                Login
-            </button>
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4">
+    <div class="max-w-5xl w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-up-secondary/5">
+
+        <div class="hidden md:flex bg-up-secondary relative p-12 flex-col justify-between overflow-hidden">
+            <div class="absolute inset-0 opacity-10 pointer-events-none">
+                <svg width="100%" height="100%"><rect width="100%" height="100%" fill="url(#auth-pattern)" /></svg>
+                <defs><pattern id="auth-pattern" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#fff" /></pattern></defs>
+            </div>
+
+            <div class="relative z-10">
+                <span class="text-up-primary text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Secure Access</span>
+                <h2 class="text-5xl font-serif font-bold text-white tracking-tighter">Welcome <br><span class="italic text-up-primary">Back.</span></h2>
+            </div>
+
+            <div class="relative z-10">
+                <p class="text-white/40 text-xs leading-relaxed italic">
+                    "One cannot think well, love well, sleep well, if one has not dined well."
+                </p>
+                <div class="mt-6 flex gap-2">
+                    <div class="w-8 h-[1px] bg-up-primary self-center"></div>
+                    <span class="text-[9px] text-up-primary font-black uppercase tracking-widest text-white/60">Urban Palate Nairobi</span>
+                </div>
+            </div>
         </div>
-    </form>
-    <p class="text-center text-gray-600 mt-4">
-        Need an account? <a href="{% url 'accounts:register' %}" class="text-up-primary hover:underline font-medium">Register here</a>.
-    </p>
+
+        <div class="p-10 md:p-16 flex flex-col justify-center">
+            <header class="mb-10 text-center md:text-left">
+                <h1 class="text-3xl font-serif font-bold text-up-secondary">Identity <span class="text-up-primary italic">Verification</span></h1>
+                <p class="text-sm text-gray-400 mt-2 font-medium">Please enter your credentials to proceed.</p>
+            </header>
+
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="auth-form-container">
+                    {{ form|crispy }}
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit"
+                            class="w-full bg-up-secondary text-white py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-up-primary transition-all duration-500 shadow-xl shadow-up-secondary/10 active:scale-95">
+                        Authorize Access
+                    </button>
+                </div>
+            </form>
+
+            <footer class="mt-10 pt-8 border-t border-gray-50 text-center md:text-left">
+                <p class="text-xs text-gray-500 font-medium">
+                    New to the experience?
+                    <a href="{% url 'accounts:register' %}" class="text-up-primary hover:text-up-secondary font-black uppercase tracking-widest ml-2 transition-colors">
+                        Request Membership
+                    </a>
+                </p>
+            </footer>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* Targeting Crispy labels and inputs for the "Sovereign" look */
+    .auth-form-container label {
+        font-size: 10px !important;
+        text-transform: uppercase !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.1em !important;
+        color: #A87C39 !important; /* up-primary */
+        margin-bottom: 0.5rem !important;
+    }
+    .auth-form-container input {
+        border-radius: 0.75rem !important;
+        border: 1px solid rgba(44, 62, 80, 0.1) !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 0.875rem !important;
+        transition: all 0.3s ease !important;
+    }
+    .auth-form-container input:focus {
+        border-color: #A87C39 !important;
+        box-shadow: 0 0 0 4px rgba(168, 124, 57, 0.05) !important;
+        outline: none !important;
+    }
+</style>
 {% endblock content %}

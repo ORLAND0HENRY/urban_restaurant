@@ -2,8 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import F
-
-# Import models
 from menu.models import MenuItem
 from .models import Cart, CartItem
 
@@ -126,3 +124,24 @@ def remove_from_cart(request, item_id):
             messages.error(request, "That item was not found in your cart.")
 
     return redirect('orders:cart')
+
+@login_required
+def checkout(request):
+    """
+    Handles the transition from Cart to Order.
+    Verifies items exist before allowing access to the payment/delivery stage.
+    """
+    try:
+        cart = Cart.objects.get(user=request.user)
+        if not cart.items.exists():
+            messages.warning(request, "Your selection is empty. Please add items before checking out.")
+            return redirect('menu:menu_list')
+    except Cart.DoesNotExist:
+        return redirect('menu:menu_list')
+
+    # Logic for processing the order goes here (Payment integration, etc.)
+    context = {
+        'cart': cart,
+        'page_title': 'Finalize Experience',
+    }
+    return render(request, 'orders/checkout.html', context)

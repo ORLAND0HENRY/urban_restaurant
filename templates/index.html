@@ -2,31 +2,57 @@
 {% load static %}
 
 {% block content %}
-<header class="relative overflow-hidden bg-up-light pt-10 pb-20 md:pb-32">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div class="z-10 text-center lg:text-left">
-                <h1 class="text-6xl md:text-7xl font-serif font-extrabold text-up-secondary leading-tight mb-4">
-                    The <span class="text-up-primary">Urban Palate</span>
+<section class="relative min-h-[90vh] flex items-center overflow-hidden bg-[#0a0a0a] py-20">
+
+    <div class="absolute top-0 right-0 w-1/3 h-full bg-amber-500/5 blur-[120px] rounded-full"></div>
+    <div class="absolute bottom-0 left-0 w-1/4 h-1/2 bg-amber-500/10 blur-[100px] rounded-full"></div>
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+            <div class="z-10 text-center lg:text-left order-2 lg:order-1">
+                <h1 class="text-6xl md:text-8xl font-black italic tracking-tighter text-white leading-[0.9] mb-6">
+                    THE <span class="text-amber-500">URBAN</span><br>PALATE
                 </h1>
-                <p class="text-xl text-gray-600 mb-8 max-w-md lg:max-w-none mx-auto">
-                    Welcome! To your number one all-stop for all you can eat. We don't bite,but you will ; at our delicious menus!
+
+                <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-lg mx-auto lg:mx-0 font-light leading-relaxed">
+                    Nairobi's premier culinary experience. We don't just serve food; we engineer flavor. <span class="text-white font-medium">Explore freely</span>—no account needed to browse.
                 </p>
-                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center lg:justify-start">
-                    <a href="{% url 'menu:menu_list' %}" class="bg-up-primary text-up-light py-3 px-8 rounded-lg text-lg font-semibold shadow-soft hover:shadow-lg transition duration-300 transform hover:scale-[1.02]">
-                        View Our Menu
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="{% url 'menu:menu_list' %}"
+                       class="group relative inline-flex items-center justify-center bg-amber-500 text-black py-4 px-10 rounded-2xl text-lg font-black uppercase tracking-widest transition-all hover:bg-amber-400 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+                        View Menu
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
                     </a>
-                    <a href="{% url 'reservations:new_reservation' %}" class="border border-up-secondary text-up-secondary py-3 px-8 rounded-lg text-lg font-semibold hover:bg-up-secondary hover:text-up-light transition duration-300">
-                        Book a Table
+
+                    <a href="{% url 'reservations:new_reservation' %}"
+                       class="inline-flex items-center justify-center border-2 border-white/20 text-white py-4 px-10 rounded-2xl text-lg font-bold hover:bg-white hover:text-black transition-all">
+                        Book Table
                     </a>
                 </div>
             </div>
 
-            <div class="relative w-full h-80 md:h-96 lg:h-[500px] z-0">
-                <img src="{% static 'img/steak.png'%}" alt="urban palate" class="object-cover w-full h-full rounded-2xl shadow-xl border-4 border-white transform rotate-3 hover:rotate-0 transition duration-500 ease-in-out">
-                <div class="absolute inset-0 bg-up-primary/10 rounded-2xl"></div>
+            <div class="relative order-1 lg:order-2 flex justify-center">
+                <div class="relative w-full max-w-[500px] aspect-square">
+                    <div class="absolute inset-0 border-[1px] border-amber-500/30 rounded-full animate-[spin_10s_linear_infinite]"></div>
+
+                    <div class="absolute inset-4 overflow-hidden rounded-3xl shadow-2xl shadow-amber-500/20 transform rotate-2 hover:rotate-0 transition-all duration-700">
+                        {% if static_img_steak %}
+                            <img src="{% static 'img/steak.png' %}" alt="Urban Palate Signature" class="w-full h-full object-cover">
+                        {% else %}
+                            <div class="w-full h-full bg-neutral-900 flex items-center justify-center text-amber-500/20">
+                                <span class="text-4xl font-black">IMAGE</span>
+                            </div>
+                        {% endif %}
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
-</header>
+</section>
 {% endblock %}

@@ -2,24 +2,94 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<section class="max-w-2xl mx-auto px-4">
-    <div class="bg-white p-8 md:p-10 rounded-xl shadow-lg border-t-4 border-up-primary">
-        <h2 class="text-4xl font-serif font-bold text-center text-up-secondary mb-2">Reserve Your Table</h2>
-        <p class="text-center text-gray-500 mb-8">Secure your dining experience at Urban Palate.</p>
+<div class="max-w-6xl mx-auto px-4 py-16">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
 
-        <!-- The action URL remains 'reservations:new_reservation' (the URL name) -->
-        <form method="post" action="{% url 'reservations:new_reservation' %}" class="space-y-6">
-            {% csrf_token %}
+        <div class="lg:col-span-2 space-y-8">
+            <header>
+                <span class="text-up-primary text-[10px] font-black uppercase tracking-[0.4em] mb-3 block">Booking Concierge</span>
+                <h1 class="text-5xl font-serif font-bold text-up-secondary tracking-tighter leading-none">
+                    Secure <br><span class="italic text-up-primary text-4xl">The Experience.</span>
+                </h1>
+            </header>
 
-            {{ form|crispy }}
+            <div class="space-y-6">
+                <div class="bg-up-secondary text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
+                    <h3 class="font-serif italic text-xl mb-4">Dining Policy</h3>
+                    <ul class="text-xs space-y-3 text-white/70 font-medium tracking-wide">
+                        <li class="flex gap-3">
+                            <span class="text-up-primary">01.</span>
+                            <span>Reservations are held for a maximum of 15 minutes past the scheduled time.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-up-primary">02.</span>
+                            <span>For parties larger than 8, please contact our executive concierge directly.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="text-up-primary">03.</span>
+                            <span>Smart casual attire is recommended for evening service.</span>
+                        </li>
+                    </ul>
+                </div>
 
-            <button type="submit"
-                    class="w-full px-4 py-3 bg-up-primary text-up-light font-semibold rounded-lg
-                           hover:bg-up-secondary transition duration-200
-                           focus:outline-none focus:ring-4 focus:ring-up-primary focus:ring-opacity-50">
-                Confirm Reservation
-            </button>
-        </form>
+                <div class="p-8 border-2 border-dashed border-up-secondary/10 rounded-[2rem]">
+                    <p class="text-[9px] font-black text-up-primary uppercase tracking-[0.2em] mb-2">Availability</p>
+                    <p class="text-sm text-up-secondary font-bold">Mon — Sun | 06:00 — 01:30</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-3">
+            <div class="bg-white p-10 md:p-14 rounded-[2.5rem] shadow-2xl border border-up-secondary/5">
+                <form method="post" action="{% url 'reservations:new_reservation' %}" class="space-y-6 reservation-form">
+                    {% csrf_token %}
+
+                    <div class="grid grid-cols-1 gap-4">
+                        {{ form|crispy }}
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="submit"
+                                class="w-full px-8 py-5 bg-up-secondary text-white text-[10px] font-black uppercase tracking-[0.4em] rounded-2xl
+                                       hover:bg-up-primary transition-all duration-500 shadow-xl shadow-up-secondary/20 active:scale-95">
+                            Finalize Appointment
+                        </button>
+                    </div>
+                </form>
+
+                <p class="text-center text-[10px] text-gray-400 mt-8 uppercase tracking-widest font-medium">
+                    A confirmation email will be sent upon approval.
+                </p>
+            </div>
+        </div>
     </div>
-</section>
+</div>
+
+<style>
+    /* Styling Crispy Forms for the Urban Palate Aesthetic */
+    .reservation-form label {
+        font-size: 10px !important;
+        text-transform: uppercase !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.15em !important;
+        color: #A87C39 !important; /* up-primary */
+        margin-bottom: 0.6rem !important;
+    }
+    .reservation-form input,
+    .reservation-form select,
+    .reservation-form textarea {
+        border-radius: 1rem !important;
+        border: 1px solid rgba(44, 62, 80, 0.1) !important;
+        padding: 0.85rem 1.25rem !important;
+        font-size: 0.9rem !important;
+        background-color: #fcfcfc !important;
+        transition: all 0.3s ease !important;
+    }
+    .reservation-form input:focus {
+        border-color: #A87C39 !important;
+        background-color: #fff !important;
+        box-shadow: 0 10px 20px rgba(168, 124, 57, 0.05) !important;
+        outline: none !important;
+    }
+</style>
 {% endblock %}

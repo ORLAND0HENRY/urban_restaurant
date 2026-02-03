@@ -2,64 +2,100 @@
 {% load static %}
 
 {% block content %}
+<div class="max-w-3xl mx-auto px-4 py-12">
+    <div class="flex justify-between items-center mb-10 no-print">
+        <a href="{% url 'dashboard:home' %}" class="text-xs font-black uppercase tracking-widest text-up-secondary/40 hover:text-up-primary transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Back to Dashboard
+        </a>
+        <button id="download-pdf-button" class="group bg-up-secondary text-white py-3 px-6 rounded-xl hover:bg-up-primary transition-all duration-300 flex items-center gap-3 shadow-lg shadow-up-secondary/20">
+            <span class="text-[10px] font-black uppercase tracking-widest">Download Official Receipt</span>
+            <svg class="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+        </button>
+    </div>
 
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-serif text-up-primary">Urban Palate - Order Receipt #{{ order.id }}</h1>
-    <button id="download-pdf-button" class="bg-up-primary text-up-light py-2 px-4 rounded-lg hover:bg-up-secondary transition duration-200">
-        Download PDF 💾
-    </button>
+    <div id="receipt-content" class="bg-white p-12 md:p-16 rounded-[2.5rem] shadow-2xl border border-up-secondary/5 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
+            <h2 class="text-9xl font-serif font-bold italic">UP</h2>
+        </div>
+
+        <div class="flex flex-col md:flex-row justify-between items-start gap-8 mb-16 border-b border-up-background pb-12">
+            <div>
+                <h2 class="text-4xl font-serif font-bold text-up-secondary tracking-tighter mb-2">Urban <span class="text-up-primary italic">Palate</span></h2>
+                <p class="text-[10px] font-black uppercase tracking-[0.4em] text-up-secondary/40">Nairobi Executive Branch</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-black uppercase tracking-widest text-up-primary mb-1">Official Document</p>
+                <p class="text-2xl font-mono font-bold text-up-secondary">INV-{{ order.id|stringformat:"05d" }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+            <div>
+                <span class="block text-[9px] font-black uppercase text-up-secondary/40 tracking-widest mb-2">Date Issued</span>
+                <p class="text-sm font-bold text-up-secondary">{{ order.order_date|date:"d M Y" }}</p>
+            </div>
+            <div>
+                <span class="block text-[9px] font-black uppercase text-up-secondary/40 tracking-widest mb-2">Client</span>
+                <p class="text-sm font-bold text-up-secondary">{{ order.customer_name }}</p>
+            </div>
+            <div>
+                <span class="block text-[9px] font-black uppercase text-up-secondary/40 tracking-widest mb-2">Payment</span>
+                <p class="text-sm font-bold text-up-secondary">{{ order.get_payment_method_display }}</p>
+            </div>
+            <div class="text-right">
+                <span class="block text-[9px] font-black uppercase text-up-secondary/40 tracking-widest mb-2">Time</span>
+                <p class="text-sm font-bold text-up-secondary">{{ order.order_date|date:"H:i" }} EAT</p>
+            </div>
+        </div>
+
+        <div class="mb-16">
+            <table class="w-full text-left">
+                <thead class="bg-up-light/50 text-[10px] uppercase tracking-widest text-up-secondary/60">
+                    <tr>
+                        <th class="px-6 py-4 rounded-l-lg">Description</th>
+                        <th class="px-6 py-4 text-center">Qty</th>
+                        <th class="px-6 py-4 text-right rounded-r-lg">Total (KES)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-up-secondary/5">
+                    {% for item in order.items.all %}
+                    <tr class="group">
+                        <td class="px-6 py-5">
+                            <p class="font-bold text-up-secondary text-sm tracking-tight">{{ item.menu_item.name }}</p>
+                            <p class="text-[10px] text-up-secondary/40 italic">Premium Selection</p>
+                        </td>
+                        <td class="px-6 py-5 text-center font-mono text-sm">{{ item.quantity }}</td>
+                        <td class="px-6 py-5 text-right font-bold text-up-secondary">{{ item.get_cost|floatformat:0 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-end border-t-2 border-up-secondary pt-8">
+            <div class="w-full md:w-1/3 space-y-3">
+                <div class="flex justify-between text-xs text-up-secondary/50 font-black uppercase tracking-widest">
+                    <span>Subtotal</span>
+                    <span>{{ order.get_total_cost|floatformat:0 }}</span>
+                </div>
+                <div class="flex justify-between text-xs text-up-secondary/50 font-black uppercase tracking-widest">
+                    <span>VAT (16%)</span>
+                    <span class="italic">Inclusive</span>
+                </div>
+                <div class="flex justify-between items-end pt-4 border-t border-up-background">
+                    <span class="text-xs font-black uppercase tracking-[0.3em] text-up-secondary">Total Due</span>
+                    <span class="text-3xl font-bold text-up-primary leading-none">{{ order.get_total_cost|floatformat:0 }} <span class="text-xs">KES</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-24 text-center">
+            <p class="text-[10px] font-black uppercase tracking-[0.5em] text-up-secondary/20 mb-4">Thank you for your patronage</p>
+            <div class="inline-block px-8 py-2 bg-up-background rounded-full">
+                <p class="text-[9px] text-up-secondary/40 font-medium">Urban Palate Innovations © 2026 • Secure Document</p>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div id="receipt-content" class="bg-white p-8 rounded-xl shadow-soft max-w-2xl mx-auto border-t-4 border-up-primary">
-    <div class="text-center mb-6">
-        <h2 class="text-4xl font-serif text-up-primary mb-1">Urban Palate</h2>
-        <p class="text-sm text-gray-500">A Taste of Modern Elegance</p>
-    </div>
-
-    <div class="grid grid-cols-2 gap-y-2 mb-6 text-sm">
-        <div><strong class="text-up-secondary">Receipt ID:</strong> #{{ order.id }}</div>
-        <div class="text-right"><strong class="text-up-secondary">Date:</strong> {{ order.order_date|date:"F j, Y" }}</div>
-        <div><strong class="text-up-secondary">Customer:</strong> {{ order.customer_name }}</div>
-        <div class="text-right"><strong class="text-up-secondary">Time:</strong> {{ order.order_date|date:"h:i A" }}</div>
-        <div><strong class="text-up-secondary">Phone:</strong> {{ order.customer_phone }}</div>
-        <div class="text-right"><strong class="text-up-secondary">Payment:</strong> {{ order.get_payment_method_display }}</div>
-    </div>
-
-    <div class="mb-6">
-        <h3 class="text-xl font-semibold mb-3 border-b pb-1">Items</h3>
-        <table class="w-full text-left text-sm">
-            <thead>
-                <tr class="text-up-primary border-b-2">
-                    <th class="py-2">Item</th>
-                    <th class="py-2 text-center">Qty</th>
-                    <th class="py-2 text-right">Unit Price</th>
-                    <th class="py-2 text-right">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in order.items.all %}
-                <tr class="border-b last:border-b-0">
-                    <td class="py-2">{{ item.menu_item.name }}</td>
-                    <td class="py-2 text-center">{{ item.quantity }}</td>
-                    <td class="py-2 text-right">KSh {{ item.price|floatformat:2 }}</td>
-                    <td class="py-2 text-right">KSh {{ item.get_cost|floatformat:2 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="text-right text-lg font-bold border-t pt-4">
-        <p>Total: <span class="text-up-primary">KSh {{ order.get_total_cost|floatformat:2 }}</span></p>
-    </div>
-    
-    <div class="text-center mt-6 text-sm text-gray-600">
-        <p>Thank you for choosing Urban Palate!</p>
-    </div>
-</div>
-
 {% endblock content %}
-
-{% block extra_js %}
-<script src="{% static 'orders/js/receipt_generator.js' %}"></script>
-{% endblock %}

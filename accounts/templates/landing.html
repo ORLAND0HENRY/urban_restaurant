@@ -6,132 +6,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urban Palate | Refined Dining Experience</title>
+    <title>Urban Palate | The Executive Culinary Experience</title>
     <style>
-        /* Load Inter for body, Playfair Display for elegant headings */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
-        .font-primary { font-family: 'Playfair Display', serif; }
-        .font-secondary { font-family: 'Inter', sans-serif; }
-
-        /* Bright Background - Light Creamy Gray */
-        .bright-bg {
-            background-color: #F7F7F7;
-            min-height: 100vh;
+        :root {
+            --up-primary: #A87C39; /* Your signature Amber-500/Gold */
+            --up-secondary: #2c3e50; /* Deep Slate */
+            --up-bg: #F9F7F2; /* Soft Parchment */
         }
 
-        /* Gold Accent Color (for luxury elements) */
-        .text-accent { color: #A87C39; } /* Deep Bronze/Gold */
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-sans { font-family: 'Inter', sans-serif; }
 
-        /* Custom Main Card Styling (White and Compact) */
+        body { background-color: var(--up-bg); }
+
         .main-card {
-            background: #FFFFFF; /* Pure White Card */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Lighter shadow */
-            /* Adjusted size: Max width reduced for compactness */
-            max-width: 1000px;
+            background: #FFFFFF;
+            max-width: 1100px;
             width: 95%;
+            min-height: 600px;
+            box-shadow: 0 40px 100px rgba(44, 62, 80, 0.08);
+        }
 
-            /* Responsive Height Control: Fixed height on desktop, flexible on mobile */
-            min-height: 550px;
+        .hero-image-container {
+            background: var(--up-secondary);
+            position: relative;
             overflow: hidden;
         }
 
-        /* Image Placeholder (Left Panel) */
-        .image-placeholder {
-            /* Using a textured light background for the placeholder */
-            background-color: #E5E7EB; /* Light Gray */
-            background-image: linear-gradient(to bottom, #E5E7EB, #D1D5DB);
-            position: relative;
+        /* Subtle gold grain texture for the left panel */
+        .hero-image-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.05;
+            background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
         }
 
-        /* Desktop Grid - 2 columns */
-        @media (min-width: 768px) {
-            .main-card {
-                display: grid;
-                grid-template-columns: 1fr 1fr; /* 50/50 split */
-            }
-            .image-placeholder {
-                 height: auto; /* Match container height */
-            }
+        .btn-primary {
+            background-color: var(--up-secondary);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Mobile Grid - Stacking (1 row for image, 1 row for content) */
-        @media (max-width: 767px) {
-            .image-placeholder {
-                height: 250px; /* Fixed height for image on mobile */
-            }
+        .btn-primary:hover {
+            background-color: var(--up-primary);
+            transform: translateY(-2px);
         }
     </style>
 </head>
-<body class="font-secondary text-gray-800 bright-bg flex items-center justify-center p-4">
+<body class="font-sans text-gray-800 flex items-center justify-center p-6 min-h-screen">
 
-    <!-- Dual-Panel Card Container -->
-    <div class="main-card rounded-2xl grid grid-cols-1 md:grid-cols-2">
+    <div class="main-card rounded-[2.5rem] overflow-hidden grid grid-cols-1 md:grid-cols-2">
 
-        <!-- === PANEL 1: IMAGE PLACEHOLDER === -->
-        <div class="image-placeholder flex items-center justify-center p-6">
-             <div class="text-center text-gray-600">
-                <img src="{% static 'img/rest.png' %}" alt="Just a restaurant pic nothing else to see" class="object-fit w-full h-100 rounded-2xl shadow-xl border-4 border-white transform rotate-3 hover:rotate-0 transition duration-500 ease-in-out">
-                <p class="mt-2 text-sm">WELCOME.</p>
-                <div class="mt-4 p-2 border-2 border-dashed border-gray-400 rounded-lg">
+        <div class="hero-image-container flex items-center justify-center p-12 relative">
+             <div class="relative z-10 text-center">
+                <div class="relative group">
+                    <img src="{% static 'img/rest.png' %}" alt="Urban Palate Interior"
+                         class="w-full h-[400px] object-cover rounded-2xl shadow-2xl border-[12px] border-white/10 transform -rotate-2 group-hover:rotate-0 transition-all duration-700">
 
-                    THE URBAN PALATE    ⁅The Restaurant 0f Your Choice⁆
+                    <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-xl hidden md:block">
+                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-up-secondary">Top Rated</p>
+                        <p class="font-serif italic text-up-primary">2026 Choice</p>
+                    </div>
+                </div>
+
+                <div class="mt-12">
+                    <span class="text-white/30 text-[10px] font-black uppercase tracking-[0.6em]">Nairobi • Kenya</span>
                 </div>
              </div>
         </div>
 
-        <!-- === PANEL 2: CONTENT & CTA === -->
-        <div class="p-6 sm:p-8 flex flex-col justify-center text-center overflow-auto">
+        <div class="p-10 md:p-16 flex flex-col justify-center">
 
-            <header class="mb-6">
-                <p class="text-sm tracking-widest uppercase mb-1 text-gray-500">
-                    The Ultimate Culinary Destination
-                </p>
-                <h1 class="text-4xl sm:text-5xl font-primary font-bold tracking-tight text-accent leading-tight">
-                    Urban Palate
+            <header class="mb-10 text-center md:text-left">
+                <span class="text-up-primary text-[10px] font-black uppercase tracking-[0.4em] mb-3 block">Orlantech Innovations Presents</span>
+                <h1 class="text-5xl md:text-6xl font-serif font-bold text-up-secondary tracking-tighter leading-none mb-4">
+                    Urban <span class="italic text-up-primary">Palate</span>
                 </h1>
-                <h2 class="text-lg font-light mt-2 text-gray-600">
-                    Exquisite Dining. Personalized Service.
-                </h2>
+                <p class="text-lg text-gray-400 font-light italic">A sensory journey into refined dining.</p>
             </header>
 
-            <!-- Informative Details -->
-            <section class="mb-8 text-left space-y-3">
-                <p class="text-sm text-gray-700">
-                    Urban Palate presents a curated menu list, dedicated to the art of fine dining. We ensure every visit is a sensory journey, guided by our world-class team.
+            <section class="mb-10 space-y-6">
+                <p class="text-gray-600 leading-relaxed text-sm">
+                    Step into an environment where culinary mastery meets executive comfort. Our curated seasonal menus are designed for the discerning palate.
                 </p>
 
-                <div class="flex justify-between text-sm pt-2 border-t border-gray-100">
-                    <p class="font-semibold text-accent">Hours:</p>
-                    <p class="text-gray-700">Mon - Fri, 6:00 AM – 1:30 AM</p>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <p class="font-semibold text-accent">Location:</p>
-                    <p class="text-gray-700"> Grand Avenue,Nairobi</p>
+                <div class="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
+                    <div>
+                        <span class="text-[9px] font-black text-up-primary uppercase tracking-widest block mb-1">Location</span>
+                        <p class="text-xs font-bold text-up-secondary">Grand Avenue, Nairobi</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[9px] font-black text-up-primary uppercase tracking-widest block mb-1">Service Hours</span>
+                        <p class="text-xs font-bold text-up-secondary">06:00 — 01:30</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- Action Buttons -->
-            <div class="space-y-3">
-
-                <!-- Reservation Button (Primary CTA) -->
+            <div class="flex flex-col gap-4">
                 <a href="{% url 'accounts:login' %}"
-                   class="inline-block w-full px-8 py-3 bg-red-600 text-white font-extrabold text-lg rounded-lg
-                          hover:bg-red-700 transition duration-300 shadow-md">
-                    Book Your Reservation Now
+                   class="btn-primary text-white text-center py-4 rounded-xl font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-up-secondary/20">
+                    Secure a Table
                 </a>
 
-                <!-- Menu Button (Secondary CTA) -->
                 <a href="{% url 'accounts:register' %}"
-                   class="inline-block w-full px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold text-base rounded-lg
-                          hover:bg-gray-100 transition duration-300">
-                    View Seasonal Menu
+                   class="border-2 border-up-secondary/10 text-up-secondary text-center py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-up-background transition-all">
+                    Join the Membership
                 </a>
             </div>
 
-            <p class="text-xs text-gray-400 mt-4">
-                We accept reservations up to 60 days in advance.
-            </p>
+            <footer class="mt-8 pt-6 border-t border-gray-50 flex justify-between items-center">
+                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-medium">Est. 2026</p>
+                <div class="flex gap-2">
+                    <div class="w-1.5 h-1.5 rounded-full bg-up-primary animate-pulse"></div>
+                    <span class="text-[9px] text-up-primary font-bold uppercase tracking-tighter">Live Reservations Open</span>
+                </div>
+            </footer>
         </div>
     </div>
 

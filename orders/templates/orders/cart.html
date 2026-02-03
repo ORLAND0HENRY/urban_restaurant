@@ -1,54 +1,92 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="text-4xl font-serif font-bold text-up-secondary mb-8 text-center">Your Shopping Cart</h2>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <header class="mb-12 text-center">
+        <span class="text-up-primary text-[10px] font-black uppercase tracking-[0.5em] mb-2 block">Review Your Order</span>
+        <h2 class="text-5xl font-serif font-bold text-up-secondary tracking-tight">Your <span class="italic text-up-primary">Palate</span> Selection</h2>
+    </header>
 
     {% if cart and cart.items.exists %}
-        <div class="bg-white shadow-soft rounded-xl p-6">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                        <th class="relative px-6 py-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    {# Assume 'cart' object has an 'items' related manager #}
-                    {% for item in cart.items.all %} 
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.menu_item.name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">${{ item.menu_item.price|floatformat:2 }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.quantity }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap font-medium">${{ item.get_total|floatformat:2 }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="#" class="text-red-600 hover:text-red-900">Remove</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="mt-8 flex justify-end">
-            <div class="w-full max-w-sm">
-                <div class="bg-white p-6 rounded-xl shadow-soft">
-                    <p class="text-xl font-bold mb-4">Cart Subtotal: ${{ cart.get_subtotal|floatformat:2 }}</p>
-                    <a href="{% url 'orders:checkout' %}" class="w-full block text-center bg-up-primary text-white py-3 rounded-lg text-lg font-semibold hover:bg-up-secondary transition duration-300">
-                        Proceed to Checkout
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-[2rem] shadow-sm border border-up-secondary/5 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-up-light/50 text-[10px] uppercase tracking-widest text-up-secondary/60">
+                            <tr>
+                                <th class="px-8 py-5">Delicacy</th>
+                                <th class="px-8 py-5 text-center">Qty</th>
+                                <th class="px-8 py-5 text-right">Investment</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-up-secondary/5">
+                            {% for item in cart.items.all %}
+                            <tr class="group hover:bg-up-background/30 transition-colors">
+                                <td class="px-8 py-6">
+                                    <div class="flex items-center gap-4">
+                                        {% if item.menu_item.image %}
+                                        <img src="{{ item.menu_item.image.url }}" class="w-16 h-16 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform">
+                                        {% endif %}
+                                        <div>
+                                            <p class="font-bold text-up-secondary">{{ item.menu_item.name }}</p>
+                                            <a href="{% url 'orders:remove_from_cart' item.id %}" class="text-[10px] font-black uppercase text-red-400 hover:text-red-600 tracking-widest mt-1 inline-block">Remove</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-6 text-center">
+                                    <span class="text-up-secondary font-medium">{{ item.quantity }}</span>
+                                </td>
+                                <td class="px-8 py-6 text-right">
+                                    <p class="font-bold text-up-secondary">{{ item.get_total|floatformat:0 }} <span class="text-[10px] text-up-primary uppercase">Kes</span></p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <a href="{% url 'menu:menu_list' %}" class="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-up-secondary/40 hover:text-up-primary transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Continue Exploring
+                </a>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="bg-up-secondary text-white p-8 rounded-[2rem] shadow-xl sticky top-8">
+                    <h3 class="text-xl font-serif font-bold mb-8 italic">Order Summary</h3>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between text-sm text-white/60">
+                            <span>Subtotal</span>
+                            <span>{{ cart.get_subtotal|floatformat:0 }} Kes</span>
+                        </div>
+                        <div class="flex justify-between text-sm text-white/60">
+                            <span>Service Fee</span>
+                            <span class="italic text-up-primary">Complimentary</span>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 flex justify-between items-end">
+                            <span class="text-xs uppercase font-black tracking-widest">Total</span>
+                            <span class="text-3xl font-bold text-up-primary">{{ cart.get_subtotal|floatformat:0 }}<span class="text-xs ml-1 uppercase">Kes</span></span>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'orders:checkout' %}" class="block w-full text-center bg-up-primary text-up-secondary py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white transition-all shadow-lg">
+                        Finalize Order
                     </a>
                 </div>
             </div>
         </div>
-        
+
     {% else %}
-        <div class="bg-white p-12 rounded-xl shadow-soft text-center">
-            <p class="text-xl text-gray-600 mb-6">Your cart is empty.</p>
-            <a href="{% url 'menu:menu_list' %}" class="bg-up-secondary text-white px-6 py-3 rounded-lg hover:bg-up-primary transition duration-300">
-                Start Ordering
+        <div class="max-w-md mx-auto bg-white p-12 rounded-[2rem] shadow-sm border border-up-secondary/5 text-center">
+            <div class="w-16 h-16 bg-up-background rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8 text-up-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            </div>
+            <p class="text-up-secondary/60 italic mb-8">Your palate is awaiting its first selection.</p>
+            <a href="{% url 'menu:menu_list' %}" class="inline-block bg-up-secondary text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-up-primary transition-all">
+                Browse Menu
             </a>
         </div>
     {% endif %}

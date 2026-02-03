@@ -1,64 +1,79 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="container mx-auto max-w-7xl px-4 py-10">
-    <h1 class="text-5xl font-serif font-extrabold text-up-secondary mb-12 text-center">
-        Explore Our Menu
-    </h1>
+<main class="min-h-screen bg-up-background">
+    <header class="container mx-auto px-4 pt-20 pb-16 text-center">
+        <span class="text-up-primary text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Seasonal Selection</span>
+        <h1 class="text-6xl md:text-7xl font-serif font-bold text-up-secondary tracking-tighter">
+            The <span class="italic text-up-primary text-5xl md:text-6xl">Culinary</span> List
+        </h1>
+        <div class="mt-8 flex justify-center gap-4">
+            <div class="h-px w-12 bg-up-primary/30 self-center"></div>
+            <p class="text-up-secondary/50 text-xs font-medium uppercase tracking-widest">Urban Palate Nairobi</p>
+            <div class="h-px w-12 bg-up-primary/30 self-center"></div>
+        </div>
+    </header>
 
-    {% for category in categories %}
-        {% if category.items.all %}
-            <div class="mb-16">
-                <h2 class="text-4xl font-bold text-up-primary border-b-2 border-up-primary pb-2 mb-8">
-                    {{ category.name }}
-                </h2>
+    <div class="container mx-auto px-4 pb-20 max-w-7xl">
+        {% for category in categories %}
+            {% if category.items.all %}
+                <section class="mb-20">
+                    <div class="flex flex-col mb-10 text-center md:text-left">
+                        <h2 class="text-2xl font-serif font-bold text-up-secondary italic">{{ category.name }}</h2>
+                        <div class="h-1 w-12 bg-up-primary mt-2 mx-auto md:mx-0"></div>
+                    </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    {% for item in category.items.all %}
-                        <div class="bg-white rounded-xl shadow-lg hover:shadow-xl
-                                    transition duration-300 overflow-hidden border border-up-light
-                                    flex flex-col">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        {% for item in category.items.all %}
+                            <article class="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-up-secondary/5">
 
-                            {# Image Container with fixed ASPECT RATIO for uniformity #}
-                            <div class="relative w-full aspect-video">
-                                {% if item.image %}
-                                    <img src="{{ item.image.url }}" alt="{{ item.name }}"
-                                         class="absolute inset-0 w-full h-full object-cover">
-                                {% else %}
-                                    <div class="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 font-semibold">
-                                        [Image Placeholder]
+                                <div class="relative aspect-[4/5] overflow-hidden bg-up-light">
+                                    <div id="skeleton-{{ item.id }}" class="absolute inset-0 animate-pulse bg-up-light flex items-center justify-center">
+                                        <span class="text-up-primary/20 font-serif italic">Loading...</span>
                                     </div>
-                                {% endif %}
-                            </div>
 
-                            <div class="p-6 flex flex-col flex-grow">
-                                <h3 class="text-2xl font-semibold text-up-secondary mb-2">{{ item.name }}</h3>
-                                <p class="text-gray-600 mb-4 text-sm flex-grow">{{ item.description|truncatechars:100 }}</p>
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}"
+                                             alt="{{ item.name }}"
+                                             onload="document.getElementById('skeleton-{{ item.id }}').remove();"
+                                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                                    {% endif %}
 
-                                <div class="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
-                                    <span class="text-2xl font-bold text-up-primary">
-                                        KShs {{ item.price|floatformat:2 }}
-                                    </span>
+                                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg">
+                                        <span class="text-up-secondary font-bold text-sm">
+                                            {{ item.price|floatformat:0 }}<span class="text-[10px] ml-1 text-up-primary uppercase tracking-tighter">Kes</span>
+                                        </span>
+                                    </div>
+                                </div>
 
-                                    {# 🌟 FIX: Replaced <a> with a secure POST form for adding to cart 🌟 #}
-                                    <form method="post" action="{% url 'orders:add_to_cart' item.id %}" class="inline-flex">
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h3 class="text-lg font-bold text-up-secondary tracking-tight">{{ item.name }}</h3>
+                                        <div class="flex gap-1">
+                                            {% if item.is_vegan %}<span title="Vegan" class="text-xs">🌿</span>{% endif %}
+                                            {% if item.spiciness > 5 %}<span title="Spicy" class="text-xs">🔥</span>{% endif %}
+                                        </div>
+                                    </div>
+
+                                    <p class="text-xs text-up-secondary/50 mb-6 font-medium tracking-wide">
+                                        Prep: {{ item.prep_time }} MINS • Freshly Prepared
+                                    </p>
+
+                                    <form method="post" action="{% url 'orders:add_to_cart' item.id %}">
                                         {% csrf_token %}
-                                        {# Hidden input to send quantity=1 to the view #}
-                                        <input type="hidden" name="quantity" value="1">
                                         <button type="submit"
-                                                class="bg-up-secondary text-white py-2 px-4 rounded-lg text-sm font-medium
-                                                       hover:bg-up-primary transition duration-300">
-                                            Add to Cart
+                                                class="w-full py-4 bg-up-secondary hover:bg-up-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-300 shadow-lg shadow-up-secondary/10">
+                                            Add to Experience
                                         </button>
                                     </form>
-
                                 </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-    {% endfor %}
-</div>
-{% endblock content %}
+                            </article>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}
