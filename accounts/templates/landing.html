@@ -1,130 +1,560 @@
-<script src="https://cdn.tailwindcss.com"></script>
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Palate | The Executive Culinary Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --up-primary: #A87C39; /* Your signature Amber-500/Gold */
-            --up-secondary: #2c3e50; /* Deep Slate */
-            --up-bg: #F9F7F2; /* Soft Parchment */
+            --gold:      #A87C39;
+            --gold-lt:   rgba(168,124,57,0.12);
+            --gold-glow: rgba(168,124,57,0.25);
+            --slate:     #1e2533;
+            --slate-mid: #2c3a4e;
+            --parchment: #F6F2EB;
+            --cream:     #FDFBF7;
+            --ink:       #1a1a1a;
+            --muted:     #8a8070;
         }
 
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .font-sans { font-family: 'Inter', sans-serif; }
-
-        body { background-color: var(--up-bg); }
-
-        .main-card {
-            background: #FFFFFF;
-            max-width: 1100px;
-            width: 95%;
-            min-height: 600px;
-            box-shadow: 0 40px 100px rgba(44, 62, 80, 0.08);
+        html, body {
+            height: 100%;
+            font-family: 'Jost', sans-serif;
+            background: var(--parchment);
+            color: var(--ink);
+            overflow-x: hidden;
         }
 
-        .hero-image-container {
-            background: var(--up-secondary);
+        /* ── SUBTLE PARCHMENT TEXTURE ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(ellipse at 20% 80%, rgba(168,124,57,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(30,37,51,0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── SHELL — centred, viewport-aware ── */
+        .shell {
+            position: relative;
+            z-index: 1;
+            min-height: 100dvh;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* ── MAIN CARD ── */
+        .card {
+            width: 100%;
+            max-width: 1080px;
+            background: #fff;
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow:
+                0 4px 6px rgba(0,0,0,0.02),
+                0 24px 60px rgba(30,37,51,0.1),
+                0 60px 120px rgba(30,37,51,0.06);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* ═══════════════════════════════
+           LEFT PANEL
+        ═══════════════════════════════ */
+        .panel-left {
+            background: var(--slate);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2.5rem;
+            min-height: 520px;
         }
 
-        /* Subtle gold grain texture for the left panel */
-        .hero-image-container::before {
-            content: "";
+        /* Layered background effects */
+        .panel-left::before {
+            content: '';
             position: absolute;
             inset: 0;
-            opacity: 0.05;
-            background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+            background:
+                radial-gradient(ellipse at 30% 20%, rgba(168,124,57,0.18) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 90%, rgba(168,124,57,0.10) 0%, transparent 45%);
         }
+
+        /* Subtle grid lines for depth */
+        .panel-left::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .panel-left-inner {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        /* ── IMAGE FRAME ── */
+        .img-frame {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+        }
+
+        .img-frame-inner {
+            border-radius: 1.25rem;
+            overflow: hidden;
+            border: 10px solid rgba(255,255,255,0.07);
+            box-shadow:
+                0 0 0 1px rgba(168,124,57,0.2),
+                0 30px 60px rgba(0,0,0,0.4);
+            transform: rotate(-1.5deg);
+            transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+            aspect-ratio: 4/3;
+        }
+
+        .img-frame:hover .img-frame-inner {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        .img-frame-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ── BADGE FLOATING CARD ── */
+        .img-badge {
+            position: absolute;
+            bottom: -1rem;
+            right: -0.75rem;
+            background: #fff;
+            border-radius: 0.875rem;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04);
+            text-align: right;
+            z-index: 3;
+        }
+        .img-badge .badge-top {
+            font-family: 'Jost', sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 2px;
+        }
+        .img-badge .badge-main {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            font-style: italic;
+            color: var(--gold);
+            display: block;
+            line-height: 1;
+        }
+
+        /* ── LOCATION STRIP ── */
+        .location-strip {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .location-strip .line {
+            width: 24px;
+            height: 1px;
+            background: rgba(168,124,57,0.4);
+        }
+        .location-strip span {
+            font-family: 'Jost', sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.25);
+        }
+
+        /* ── VERTICAL BRAND TEXT (decorative) ── */
+        .vert-brand {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: center center;
+            font-family: 'Jost', sans-serif;
+            font-size: 7px;
+            font-weight: 700;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.08);
+            white-space: nowrap;
+            z-index: 2;
+            user-select: none;
+        }
+
+        /* ═══════════════════════════════
+           RIGHT PANEL
+        ═══════════════════════════════ */
+        .panel-right {
+            padding: 3rem 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #fff;
+        }
+
+        /* ── EYEBROW ── */
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.25rem;
+        }
+        .eyebrow-line {
+            width: 28px;
+            height: 1.5px;
+            background: var(--gold);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .eyebrow span {
+            font-family: 'Jost', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        /* ── HERO HEADING ── */
+        .hero-heading {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: 700;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            color: var(--slate);
+            margin-bottom: 0.5rem;
+        }
+        .hero-heading em {
+            font-style: italic;
+            color: var(--gold);
+        }
+
+        .tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            font-weight: 300;
+            color: var(--muted);
+            margin-bottom: 1.75rem;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── BODY TEXT ── */
+        .body-text {
+            font-size: 0.85rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 1.75rem;
+        }
+
+        /* ── INFO ROW ── */
+        .info-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            padding: 1.25rem 0;
+            border-top: 1px solid #f0ede8;
+            border-bottom: 1px solid #f0ede8;
+            margin-bottom: 1.75rem;
+        }
+
+        .info-item { padding: 0 0.5rem; }
+        .info-item:first-child { padding-left: 0; border-right: 1px solid #f0ede8; }
+        .info-item:last-child  { padding-right: 0; padding-left: 1.25rem; }
+
+        .info-label {
+            font-family: 'Jost', sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--gold);
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+        .info-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--slate);
+            display: block;
+            line-height: 1.3;
+        }
+
+        /* ── BUTTONS ── */
+        .btn-stack { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-family: 'Jost', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+        }
+        .btn:active { transform: scale(0.97); }
 
         .btn-primary {
-            background-color: var(--up-secondary);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--slate);
+            color: #fff;
+            box-shadow: 0 8px 28px rgba(30,37,51,0.2);
         }
-
         .btn-primary:hover {
-            background-color: var(--up-primary);
+            background: var(--gold);
+            box-shadow: 0 12px 36px rgba(168,124,57,0.35);
             transform: translateY(-2px);
         }
+        .btn-primary i { font-size: 10px; opacity: 0.7; }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--slate);
+            border: 1.5px solid rgba(30,37,51,0.12);
+        }
+        .btn-outline:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-lt);
+            transform: translateY(-2px);
+        }
+
+        /* ── FOOTER ROW ── */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1.25rem;
+            margin-top: 1.25rem;
+            border-top: 1px solid #f7f4ef;
+        }
+
+        .footer-est {
+            font-family: 'Jost', sans-serif;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #ccc;
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+        .live-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+            animation: live-pulse 2s ease-in-out infinite;
+        }
+        @keyframes live-pulse {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
+            50%       { box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
+        }
+        .live-text {
+            font-family: 'Jost', sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #22c55e;
+        }
+
+        /* ═══════════════════════════════
+           MOBILE — stack vertically
+        ═══════════════════════════════ */
+        @media (max-width: 768px) {
+            .shell { padding: 1rem; align-items: flex-start; }
+            .card {
+                grid-template-columns: 1fr;
+                border-radius: 1.5rem;
+            }
+
+            .panel-left {
+                min-height: auto;
+                padding: 2.5rem 1.75rem 3rem;
+            }
+
+            .img-frame { max-width: 280px; }
+            .vert-brand { display: none; }
+
+            .panel-right {
+                padding: 2rem 1.75rem 1.75rem;
+            }
+
+            .hero-heading { font-size: clamp(2.8rem, 12vw, 3.8rem); }
+
+            .info-row { grid-template-columns: 1fr 1fr; }
+            .info-item:first-child { border-right: 1px solid #f0ede8; }
+        }
+
+        @media (max-width: 400px) {
+            .shell { padding: 0.75rem; }
+            .panel-left  { padding: 2rem 1.25rem 2.5rem; }
+            .panel-right { padding: 1.75rem 1.25rem 1.5rem; }
+            .img-frame   { max-width: 240px; }
+            .img-badge   { display: none; }
+            .hero-heading { font-size: 2.6rem; }
+        }
+
+        /* ── ENTRY ANIMATIONS ── */
+        @keyframes fade-up {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .panel-left  { animation: fade-in 0.8s ease both; }
+        .eyebrow     { animation: fade-up 0.6s ease both; animation-delay: 0.1s; }
+        .hero-heading{ animation: fade-up 0.6s ease both; animation-delay: 0.18s; }
+        .tagline     { animation: fade-up 0.6s ease both; animation-delay: 0.24s; }
+        .body-text   { animation: fade-up 0.6s ease both; animation-delay: 0.30s; }
+        .info-row    { animation: fade-up 0.6s ease both; animation-delay: 0.36s; }
+        .btn-stack   { animation: fade-up 0.6s ease both; animation-delay: 0.42s; }
+        .card-footer { animation: fade-up 0.6s ease both; animation-delay: 0.48s; }
     </style>
 </head>
-<body class="font-sans text-gray-800 flex items-center justify-center p-6 min-h-screen">
 
-    <div class="main-card rounded-[2.5rem] overflow-hidden grid grid-cols-1 md:grid-cols-2">
+<body>
+<div class="shell">
+    <div class="card">
 
-        <div class="hero-image-container flex items-center justify-center p-12 relative">
-             <div class="relative z-10 text-center">
-                <div class="relative group">
-                    <img src="{% static 'img/rest.png' %}" alt="Urban Palate Interior"
-                         class="w-full h-[400px] object-cover rounded-2xl shadow-2xl border-[12px] border-white/10 transform -rotate-2 group-hover:rotate-0 transition-all duration-700">
+        <!-- ═══ LEFT PANEL ═══ -->
+        <div class="panel-left">
+            <div class="vert-brand">Urban Palate · Nairobi · Est. 2026</div>
 
-                    <div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-xl hidden md:block">
-                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-up-secondary">Top Rated</p>
-                        <p class="font-serif italic text-up-primary">2026 Choice</p>
+            <div class="panel-left-inner">
+                <!-- Image with badge -->
+                <div class="img-frame">
+                    <div class="img-frame-inner">
+                        <img src="{% static 'img/rest.png' %}"
+                             alt="Urban Palate Dining Interior"
+                             onerror="this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'">
+                    </div>
+                    <div class="img-badge">
+                        <span class="badge-top">Top Rated</span>
+                        <span class="badge-main">2026 Choice</span>
                     </div>
                 </div>
 
-                <div class="mt-12">
-                    <span class="text-white/30 text-[10px] font-black uppercase tracking-[0.6em]">Nairobi • Kenya</span>
+                <!-- Location strip -->
+                <div class="location-strip">
+                    <div class="line"></div>
+                    <span>Nairobi &nbsp;·&nbsp; Kenya</span>
+                    <div class="line"></div>
                 </div>
-             </div>
+            </div>
         </div>
 
-        <div class="p-10 md:p-16 flex flex-col justify-center">
+        <!-- ═══ RIGHT PANEL ═══ -->
+        <div class="panel-right">
 
-            <header class="mb-10 text-center md:text-left">
-                <span class="text-up-primary text-[10px] font-black uppercase tracking-[0.4em] mb-3 block">Orlantech Innovations Presents</span>
-                <h1 class="text-5xl md:text-6xl font-serif font-bold text-up-secondary tracking-tighter leading-none mb-4">
-                    Urban <span class="italic text-up-primary">Palate</span>
+            <!-- Header -->
+            <div>
+                <div class="eyebrow">
+                    <div class="eyebrow-line"></div>
+                    <span>Orlantech Innovations Presents</span>
+                </div>
+
+                <h1 class="hero-heading">
+                    Urban<br><em>Palate</em>
                 </h1>
-                <p class="text-lg text-gray-400 font-light italic">A sensory journey into refined dining.</p>
-            </header>
 
-            <section class="mb-10 space-y-6">
-                <p class="text-gray-600 leading-relaxed text-sm">
-                    Step into an environment where culinary mastery meets executive comfort. Our curated seasonal menus are designed for the discerning palate.
+                <p class="tagline">A sensory journey into refined dining.</p>
+
+                <p class="body-text">
+                    Step into an environment where culinary mastery meets executive comfort. Our curated seasonal menus are designed for the discerning palate — where every detail, from plating to ambiance, is considered an art form.
                 </p>
 
-                <div class="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
-                    <div>
-                        <span class="text-[9px] font-black text-up-primary uppercase tracking-widest block mb-1">Location</span>
-                        <p class="text-xs font-bold text-up-secondary">Grand Avenue, Nairobi</p>
+                <!-- Info Row -->
+                <div class="info-row">
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="fas fa-map-marker-alt" style="font-size:7px;"></i>&nbsp; Location
+                        </span>
+                        <span class="info-value">Grand Avenue,<br>Nairobi</span>
                     </div>
-                    <div class="text-right">
-                        <span class="text-[9px] font-black text-up-primary uppercase tracking-widest block mb-1">Service Hours</span>
-                        <p class="text-xs font-bold text-up-secondary">06:00 — 01:30</p>
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="fas fa-clock" style="font-size:7px;"></i>&nbsp; Service Hours
+                        </span>
+                        <span class="info-value">06:00 — 01:30</span>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <div class="flex flex-col gap-4">
-                <a href="{% url 'accounts:login' %}"
-                   class="btn-primary text-white text-center py-4 rounded-xl font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-up-secondary/20">
+            <!-- Buttons -->
+            <div class="btn-stack">
+                <a href="{% url 'accounts:login' %}" class="btn btn-primary">
+                    <i class="fas fa-utensils"></i>
                     Secure a Table
                 </a>
-
-                <a href="{% url 'accounts:register' %}"
-                   class="border-2 border-up-secondary/10 text-up-secondary text-center py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] hover:bg-up-background transition-all">
+                <a href="{% url 'accounts:register' %}" class="btn btn-outline">
+                    <i class="fas fa-crown" style="font-size:9px;"></i>
                     Join the Membership
                 </a>
             </div>
 
-            <footer class="mt-8 pt-6 border-t border-gray-50 flex justify-between items-center">
-                <p class="text-[9px] text-gray-400 uppercase tracking-widest font-medium">Est. 2026</p>
-                <div class="flex gap-2">
-                    <div class="w-1.5 h-1.5 rounded-full bg-up-primary animate-pulse"></div>
-                    <span class="text-[9px] text-up-primary font-bold uppercase tracking-tighter">Live Reservations Open</span>
+            <!-- Footer -->
+            <div class="card-footer">
+                <span class="footer-est">Est. 2026</span>
+                <div class="live-badge">
+                    <div class="live-dot"></div>
+                    <span class="live-text">Reservations Open</span>
                 </div>
-            </footer>
+            </div>
+
         </div>
     </div>
-
+</div>
 </body>
 </html>
