@@ -108,3 +108,15 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO','https')
+    SECURE_SSL_REDIRECT = True  # Redirects all HTTP traffic to HTTPS
+    SECURE_HSTS_SECONDS = 31536000  # 1 Year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_REFERRER_POLICY = "same-origin"
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SESSION_COOKIE_SECURE=True
