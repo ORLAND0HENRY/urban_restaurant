@@ -1,25 +1,150 @@
-{% extends "base.html" %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Palate | Executive Culinary Experience</title>
 
-{% block content %}
-<section class="relative min-h-[90vh] flex items-center overflow-hidden bg-[#0a0a0a] py-20">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <div class="absolute top-0 right-0 w-1/3 h-full bg-amber-500/5 blur-[120px] rounded-full"></div>
-    <div class="absolute bottom-0 left-0 w-1/4 h-1/2 bg-amber-500/10 blur-[100px] rounded-full"></div>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'up-amber': '#F59E0B',
+                        'up-gold': '#A87C39',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Jost', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
 
+        body {
+            font-family: 'Jost', sans-serif;
+            transition: background-color 650ms cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .stage-container {
+            perspective: 1200px;
+            perspective-origin: 50% 50%;
+        }
+
+        .dish-circle {
+            box-shadow:
+                0 35px 60px -15px rgba(0, 0, 0, 0.6),
+                0 0 40px rgba(245, 158, 11, 0.25),
+                inset 0 0 0 8px rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            transition: all 650ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .dish-circle-animating {
+            transform: rotateY(90deg) rotateX(10deg) scale(0.8);
+            opacity: 0.1;
+        }
+
+        .ghost-text {
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: -0.05em;
+            line-height: 0.85;
+            user-select: none;
+            pointer-events: none;
+            transition: opacity 800ms ease, transform 800ms ease;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: #F59E0B; border-radius: 4px; }
+    </style>
+</head>
+
+<body id="app-body" class="h-full text-white bg-[#0a0a0a] relative selection:bg-amber-500 selection:text-black">
+
+    <div class="grain-overlay"></div>
+
+    <!-- HEADER -->
+    <header class="fixed top-0 inset-x-0 z-40 px-6 py-6 lg:px-12 flex items-center justify-between backdrop-blur-md bg-black/10 border-b border-white/10">
+        <div class="flex items-center gap-3">
+            <span class="bg-amber-500 text-black px-2.5 py-1 text-xs font-black tracking-widest rounded-sm uppercase">
+                URBAN PALATE
+            </span>
+            <span class="hidden sm:inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-white/60">
+                GOURMET DINING EXPERIENCE
+            </span>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-8 text-xs font-bold tracking-widest uppercase">
+            <a href="{% url 'menu:menu_list' %}" class="hover:text-amber-500 transition-colors">Our Menu</a>
+            <a href="{% url 'orders:cart' %}" class="hover:text-amber-500 transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-amber-500"></i> Experience
+            </a>
+            <a href="{% url 'reservations:new_reservation' %}" class="hover:text-amber-500 transition-colors">Reservations</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <a href="{% url 'reservations:new_reservation' %}" class="hidden sm:inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-[11px] uppercase tracking-wider px-5 py-2.5 rounded-full transition-transform active:scale-95 shadow-lg shadow-amber-500/20">
+                <i class="fa-solid fa-calendar-check"></i> Book Table
+            </a>
+            <button onclick="toggleMenuDrawer()" class="md:hidden text-2xl text-amber-500 p-2 focus:outline-none" aria-label="Open Menu">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN SHOWCASE CONTAINER WITH SWIPE & HOVER LISTENERS -->
+    <main id="hero-container" class="min-h-[90vh] pt-28 pb-16 px-6 lg:px-8 flex flex-col justify-between relative overflow-hidden z-10">
+
+        <!-- Background Glow Accents -->
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-amber-500/5 blur-[120px] rounded-full pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-1/4 h-1/2 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+        <!-- Ghost Text Background -->
+        <div class="absolute inset-0 flex items-center justify-center z-0 opacity-15 overflow-hidden pointer-events-none">
+            <h1 id="ghost-title" class="ghost-text text-[18vw] font-black uppercase text-center whitespace-nowrap">
+                URBAN PALATE
+            </h1>
+        </div>
+
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 my-auto">
+
+            <!-- Left Text Content -->
             <div class="z-10 text-center lg:text-left order-2 lg:order-1">
-                <h1 class="text-6xl md:text-8xl font-black italic tracking-tighter text-white leading-[0.9] mb-6">
+                <span id="dish-category" class="inline-block text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] text-amber-500 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 mb-4">
+                    NAIROBI'S PREMIER CULINARY EXPERIENCE
+                </span>
+
+                <h1 id="dish-name" class="text-5xl md:text-7xl font-black italic tracking-tighter text-white leading-[0.9] mb-6">
                     THE <span class="text-amber-500">URBAN</span><br>PALATE
                 </h1>
 
-                <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-lg mx-auto lg:mx-0 font-light leading-relaxed">
-                    Nairobi's premier culinary experience. We don't just serve food; we engineer flavor. <span class="text-white font-medium">Explore freely</span>—no account needed to browse.
+                <p id="dish-desc" class="text-lg md:text-xl text-gray-400 mb-8 max-w-lg mx-auto lg:mx-0 font-light leading-relaxed">
+                    We don't just serve food; we engineer flavor. <span class="text-white font-medium">Explore freely</span>—no account needed to browse.
                 </p>
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
                     <a href="{% url 'menu:menu_list' %}"
                        class="group relative inline-flex items-center justify-center bg-amber-500 text-black py-4 px-10 rounded-2xl text-lg font-black uppercase tracking-widest transition-all hover:bg-amber-400 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
                         View Menu
@@ -35,24 +160,246 @@
                 </div>
             </div>
 
-            <div class="relative order-1 lg:order-2 flex justify-center">
-                <div class="relative w-full max-w-[500px] aspect-square">
-                    <div class="absolute inset-0 border-[1px] border-amber-500/30 rounded-full animate-[spin_10s_linear_infinite]"></div>
+            <!-- Right Circular 3D Stage -->
+            <div class="relative order-1 lg:order-2 flex justify-center stage-container">
+                <div id="dish-stage" class="relative w-[300px] h-[300px] sm:w-[420px] sm:h-[420px] rounded-full flex items-center justify-center transition-all duration-700">
+                    <div class="absolute inset-0 rounded-full border-2 border-amber-500/30 scale-105 animate-[spin_10s_linear_infinite]"></div>
+                    <div class="absolute inset-0 rounded-full border border-white/10 scale-125"></div>
 
-                    <div class="absolute inset-4 overflow-hidden rounded-3xl shadow-2xl shadow-amber-500/20 transform rotate-2 hover:rotate-0 transition-all duration-700">
-                        {% if static_img_steak %}
-                            <img src="{% static 'img/steak.png' %}" alt="Urban Palate Signature" class="w-full h-full object-cover">
-                        {% else %}
-                            <div class="w-full h-full bg-neutral-900 flex items-center justify-center text-amber-500/20">
-                                <span class="text-4xl font-black">IMAGE</span>
-                            </div>
-                        {% endif %}
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div id="dish-circle-element" class="w-full h-full rounded-full overflow-hidden border-4 sm:border-8 border-amber-500/80 dish-circle relative bg-neutral-900 flex items-center justify-center shadow-2xl shadow-amber-500/20">
+                        <img id="dish-image"
+                             src=""
+                             alt=""
+                             class="w-full h-full object-cover transition-all duration-700 transform scale-100 hover:scale-110">
+                        <div id="no-image-fallback" class="hidden text-center p-6">
+                            <i class="fa-solid fa-utensils text-4xl text-amber-500 mb-2 block"></i>
+                            <span class="text-xs font-bold uppercase tracking-widest text-white/70">Urban Palate</span>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 bg-black/80 backdrop-blur-md border border-amber-500/50 px-4 py-2 sm:px-6 sm:py-3 rounded-2xl shadow-2xl flex items-center gap-2 z-20">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/70">Price</span>
+                        <span id="dish-price" class="text-base sm:text-xl font-serif font-bold text-amber-400">KES 0</span>
                     </div>
                 </div>
             </div>
 
         </div>
+
+        <!-- Carousel Bottom Control Bar -->
+        <div class="max-w-7xl mx-auto w-full flex items-center justify-between pt-6 border-t border-white/10 relative z-10">
+            <span id="carousel-counter" class="text-xs font-black tracking-widest text-amber-500 font-mono">
+                01 / 04
+            </span>
+
+            <div class="flex items-center gap-3">
+                <button onclick="handleManualNavigate('prev')" class="w-12 h-12 rounded-full border border-white/20 bg-black/30 hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-all flex items-center justify-center text-sm active:scale-95" aria-label="Previous">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button onclick="handleManualNavigate('next')" class="w-12 h-12 rounded-full border border-white/20 bg-black/30 hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-all flex items-center justify-center text-sm active:scale-95" aria-label="Next">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- DRAWER MENU -->
+    <div id="menu-drawer" class="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-neutral-950/95 backdrop-blur-2xl z-50 transform translate-x-full transition-transform duration-500 border-l border-white/10 p-6 sm:p-10 overflow-y-auto flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-between pb-6 border-b border-white/10 mb-8">
+                <span class="text-xs font-black tracking-[0.3em] uppercase text-amber-500">Full Selection</span>
+                <button onclick="toggleMenuDrawer()" class="text-2xl text-white/60 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-8">
+                {% for category in categories %}
+                    {% if category.items.all %}
+                        <div>
+                            <h3 class="text-xl font-serif font-bold text-amber-500 italic mb-4">{{ category.name }}</h3>
+                            <div class="space-y-4">
+                                {% for item in category.items.all %}
+                                    <div class="flex items-center justify-between gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+                                        <div class="flex items-center gap-3">
+                                            {% if item.image %}
+                                                <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-12 h-12 rounded-full object-cover border border-amber-500/30">
+                                            {% else %}
+                                                <div class="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                                                    <i class="fa-solid fa-utensils text-xs text-amber-500"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h4 class="text-sm font-bold text-white">{{ item.name }}</h4>
+                                                <span class="text-[10px] text-white/50">{{ item.prep_time }} MINS</span>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-sm font-bold text-amber-400 block">KES {{ item.price|floatformat:0 }}</span>
+                                            <form method="post" action="{% url 'orders:add_to_cart' item.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-[9px] font-black uppercase text-amber-500 hover:underline mt-1">
+                                                    + Add
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
-</section>
-{% endblock %}
+
+    <!-- JAVASCRIPT ROTATION & GESTURE ENGINE -->
+    <script>
+        const DISHES = [
+            {% if static_img_steak %}
+            {
+                name: 'THE <span class="text-amber-500">URBAN</span><br>PALATE',
+                category: "NAIROBI'S PREMIER CULINARY EXPERIENCE",
+                price: "KES 2,800",
+                desc: "We don't just serve food; we engineer flavor. Explore freely—no account needed to browse.",
+                image: "{% static 'img/steak.png' %}",
+                bg: '#0a0a0a',
+                ghost: 'URBAN'
+            },
+            {% endif %}
+            {% for category in categories %}
+                {% for item in category.items.all %}
+                {
+                    name: "{{ item.name|escapejs }}",
+                    category: "{{ category.name|upper|escapejs }}",
+                    price: "KES {{ item.price|floatformat:0 }}",
+                    desc: "{{ item.description|escapejs }}",
+                    image: "{% if item.image %}{{ item.image.url }}{% endif %}",
+                    bg: '#0a0a0a',
+                    ghost: "{{ item.name|slugify|upper|slice:':8' }}"
+                },
+                {% endfor %}
+            {% endfor %}
+        ];
+
+        let activeIndex = 0;
+        let isAnimating = false;
+        let isPaused = false;
+        let autoRotateTimer = null;
+        const ROTATION_INTERVAL = 4000;
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function renderDish(index) {
+            if (DISHES.length === 0) return;
+            const dish = DISHES[index];
+            const circleEl = document.getElementById('dish-circle-element');
+            const imgEl = document.getElementById('dish-image');
+            const fallbackEl = document.getElementById('no-image-fallback');
+
+            circleEl.classList.add('dish-circle-animating');
+
+            setTimeout(() => {
+                document.getElementById('app-body').style.backgroundColor = dish.bg;
+                document.getElementById('dish-name').innerHTML = dish.name;
+                document.getElementById('ghost-title').innerText = dish.ghost;
+                document.getElementById('dish-category').innerText = dish.category;
+                document.getElementById('dish-price').innerText = dish.price;
+                document.getElementById('dish-desc').innerHTML = dish.desc + ' <span class="text-white font-medium">Explore freely</span>—no account needed to browse.';
+
+                if (dish.image && dish.image.trim() !== '') {
+                    imgEl.src = dish.image;
+                    imgEl.classList.remove('hidden');
+                    fallbackEl.classList.add('hidden');
+                } else {
+                    imgEl.classList.add('hidden');
+                    fallbackEl.classList.remove('hidden');
+                }
+
+                const paddedCurrent = String(index + 1).padStart(2, '0');
+                const paddedTotal = String(DISHES.length).padStart(2, '0');
+                document.getElementById('carousel-counter').innerText = `${paddedCurrent} / ${paddedTotal}`;
+
+                circleEl.classList.remove('dish-circle-animating');
+            }, 325);
+        }
+
+        function navigate(direction) {
+            if (isAnimating || DISHES.length === 0) return;
+            isAnimating = true;
+
+            if (direction === 'next') {
+                activeIndex = (activeIndex + 1) % DISHES.length;
+            } else {
+                activeIndex = (activeIndex - 1 + DISHES.length) % DISHES.length;
+            }
+
+            renderDish(activeIndex);
+
+            setTimeout(() => {
+                isAnimating = false;
+            }, 650);
+        }
+
+        function startAutoRotation() {
+            stopAutoRotation();
+            if (DISHES.length <= 1) return;
+
+            autoRotateTimer = setInterval(() => {
+                if (!isPaused) {
+                    navigate('next');
+                }
+            }, ROTATION_INTERVAL);
+        }
+
+        function stopAutoRotation() {
+            if (autoRotateTimer) {
+                clearInterval(autoRotateTimer);
+                autoRotateTimer = null;
+            }
+        }
+
+        function handleManualNavigate(direction) {
+            isPaused = true;
+            navigate(direction);
+            setTimeout(() => { isPaused = false; }, 6000);
+        }
+
+        const heroContainer = document.getElementById('hero-container');
+        if (heroContainer) {
+            heroContainer.addEventListener('mouseenter', () => { isPaused = true; });
+            heroContainer.addEventListener('mouseleave', () => { isPaused = false; });
+
+            heroContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.targetTouches[0].clientX;
+                isPaused = true;
+            }, { passive: true });
+
+            heroContainer.addEventListener('touchmove', (e) => {
+                touchEndX = e.targetTouches[0].clientX;
+            }, { passive: true });
+
+            heroContainer.addEventListener('touched', () => {
+                isPaused = false;
+                const swipeDistance = touchStartX - touchEndX;
+                if (Math.abs(swipeDistance) > 50) {
+                    if (swipeDistance > 0) navigate('next');
+                    else navigate('prev');
+                }
+            });
+        }
+
+        function toggleMenuDrawer() {
+            document.getElementById('menu-drawer').classList.toggle('translate-x-full');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (DISHES.length > 0) {
+                renderDish(0);
+                startAutoRotation();
+            }
+        });
+    </script>
+</body>
+</html>

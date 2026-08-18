@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 # Import the new home_view from the project's root views.py
 from . import views as urban_palate_views
 

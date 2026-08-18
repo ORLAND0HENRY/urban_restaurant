@@ -1,92 +1,131 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<main class="min-h-screen bg-[#0a0a0a] text-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
 
-    <header class="mb-12 flex justify-between items-end border-b border-up-secondary/10 pb-8">
-        <div>
-            <h1 class="text-5xl font-serif font-bold text-up-secondary tracking-tight">
-                Executive <span class="text-up-primary">Control</span>
-            </h1>
-            <p class="text-up-secondary/60 mt-2 italic">Operational Intelligence & Guest Management</p>
-        </div>
-        <div class="text-right">
-            <span class="text-[10px] text-up-primary font-black uppercase tracking-[0.2em]">System Status</span>
-            <p class="text-green-600 font-bold flex items-center gap-2 justify-end">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Live Oversight
-            </p>
-        </div>
-    </header>
+    <!-- Ambient Glow Background Effects -->
+    <div class="absolute top-0 right-0 w-1/3 h-full bg-amber-500/5 blur-[140px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-1/4 h-1/2 bg-amber-500/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div class="bg-up-secondary p-8 rounded-2xl shadow-lg">
-            <p class="text-[10px] font-black text-up-primary uppercase tracking-widest mb-1">Total Covers</p>
-            <h3 class="text-4xl font-bold text-up-light">{{ stats.total_covers|default:"0" }}</h3>
+    <div class="max-w-7xl mx-auto w-full relative z-10">
+
+        <!-- Header Section -->
+        <header class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/10 pb-8 gap-6">
+            <div>
+                <span class="inline-block text-amber-500 text-[10px] font-black uppercase tracking-[0.4em] bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 mb-4">
+                    Management Suite
+                </span>
+                <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tight text-white leading-none">
+                    Executive <span class="text-amber-500 italic">Control</span>
+                </h1>
+                <p class="text-gray-400 font-light tracking-[0.2em] text-xs uppercase mt-3">Operational Intelligence & Guest Management</p>
+            </div>
+            <div class="flex items-center gap-4 bg-neutral-900/80 border border-white/10 px-5 py-3 rounded-2xl backdrop-blur-xl">
+                <div>
+                    <span class="text-[9px] text-amber-500 font-black uppercase tracking-[0.2em] block mb-0.5">System Status</span>
+                    <p class="text-emerald-400 font-bold text-xs flex items-center gap-2">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span> Live Oversight
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats & Actions Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+            <!-- Stat Card 1 -->
+            <div class="bg-neutral-900/90 border border-white/10 p-8 rounded-[2.5pax] rounded-[2rem] shadow-2xl relative overflow-hidden backdrop-blur-xl group hover:border-amber-500/50 transition-all duration-300">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+                <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-2">Total Covers</p>
+                <h3 class="text-4xl md:text-5xl font-black text-white tracking-tight">{{ stats.total_covers|default:"0" }}</h3>
+            </div>
+
+            <!-- Stat Card 2 -->
+            <div class="bg-neutral-900/90 border border-white/10 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden backdrop-blur-xl group hover:border-amber-500/50 transition-all duration-300">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-all"></div>
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Avg Party Size</p>
+                <h3 class="text-4xl md:text-5xl font-black text-white tracking-tight">{{ stats.avg_guests|default:"0.0" }}</h3>
+            </div>
+
+            <!-- Action Card -->
+            <div class="bg-neutral-900/50 border border-dashed border-white/20 p-8 rounded-[2rem] shadow-xl flex items-center justify-center backdrop-blur-xl hover:border-amber-500/50 hover:bg-neutral-900/90 transition-all duration-300 group">
+                <a href="{% url 'reservations:new_reservation' %}" class="text-amber-500 font-black uppercase tracking-widest text-xs border border-amber-500/30 px-6 py-4 rounded-xl hover:bg-amber-500 hover:text-black transition-all shadow-[0_0_20px_rgba(245,158,11,0.15)] flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Manual Booking</span>
+                </a>
+            </div>
         </div>
-        <div class="bg-white border border-up-secondary/10 p-8 rounded-2xl shadow-sm">
-            <p class="text-[10px] font-black text-up-secondary/40 uppercase tracking-widest mb-1">Avg Party Size</p>
-            <h3 class="text-4xl font-bold text-up-secondary">{{ stats.avg_guests|default:"0.0" }}</h3>
+
+        <!-- Reservations Stream Table Card -->
+        <div class="bg-neutral-900/90 rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden backdrop-blur-2xl">
+            <div class="px-8 py-6 border-b border-white/10 flex items-center justify-between">
+                <h2 class="text-xs font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                    <i class="fa-solid fa-stream text-amber-500"></i> Live Reservation Stream
+                </h2>
+                <span class="text-[10px] font-mono text-gray-400 uppercase">Realtime Data</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-black/40 text-[10px] uppercase tracking-widest text-gray-400 border-b border-white/10">
+                        <tr>
+                            <th class="px-8 py-5">Guest Identity</th>
+                            <th class="px-8 py-5 text-center">Schedule</th>
+                            <th class="px-8 py-5 text-center">Party</th>
+                            <th class="px-8 py-5 text-right">Management Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for r in reservations %}
+                        <tr class="hover:bg-white/[0.02] transition-colors group">
+                            <td class="px-8 py-6">
+                                <span class="block font-bold text-white uppercase tracking-tight text-sm group-hover:text-amber-400 transition-colors">
+                                    {{ r.user.username|default:r.guest_name }}
+                                </span>
+                                <span class="text-[10px] text-amber-500 font-mono italic">Ref: #00{{ r.id }}</span>
+                            </td>
+                            <td class="px-8 py-6 text-center">
+                                <span class="block text-sm font-bold text-gray-200">{{ r.date|date:"D, d M" }}</span>
+                                <span class="text-xs text-amber-500/80 font-mono">{{ r.time }}</span>
+                            </td>
+                            <td class="px-8 py-6 text-center text-lg font-light font-mono text-gray-300">
+                                {{ r.party_size }}
+                            </td>
+                            <td class="px-8 py-6">
+                                <div class="flex items-center justify-end gap-4">
+                                    <span class="text-[9px] font-black uppercase px-3 py-1 rounded-full border tracking-widest
+                                        {% if r.status == 'CONFIRMED' %} border-emerald-500/30 text-emerald-400 bg-emerald-500/10
+                                        {% elif r.status == 'PENDING' %} border-amber-500/30 text-amber-400 bg-amber-500/10
+                                        {% else %} border-red-500/30 text-red-400 bg-red-500/10 {% endif %}">
+                                        {{ r.status }}
+                                    </span>
+
+                                    {% if r.status == 'PENDING' %}
+                                    <div class="flex gap-2">
+                                        <a href="{% url 'dashboard:update_status' r.pk 'confirm' %}" class="w-9 h-9 flex items-center justify-center bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500 hover:text-black rounded-xl transition-all shadow-lg" title="Confirm Booking">
+                                            <i class="fa-solid fa-check text-xs"></i>
+                                        </a>
+                                        <a href="{% url 'dashboard:update_status' r.pk 'cancel' %}" class="w-9 h-9 flex items-center justify-center bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-lg" title="Reject/Cancel">
+                                            <i class="fa-solid fa-xmark text-xs"></i>
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="px-8 py-12 text-center text-gray-500 text-xs font-mono uppercase tracking-widest">
+                                No active reservations recorded in the stream.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="bg-white border border-up-secondary/10 p-8 rounded-2xl shadow-sm flex items-center justify-center">
-            <a href="{% url 'reservations:new_reservation' %}" class="text-up-primary font-black uppercase tracking-widest text-xs border-2 border-dashed border-up-primary/30 px-6 py-4 rounded-xl hover:bg-up-primary/5 transition-all">
-                + Manual Booking
-            </a>
-        </div>
+
     </div>
-
-    <div class="bg-white rounded-3xl shadow-sm border border-up-secondary/5 overflow-hidden">
-        <div class="px-8 py-6 border-b border-up-background">
-            <h2 class="text-sm font-black text-up-secondary uppercase tracking-[0.2em]">Live Reservation Stream</h2>
-        </div>
-
-        <table class="w-full text-left border-collapse">
-            <thead class="bg-up-light/30 text-[10px] uppercase tracking-widest text-up-secondary/60">
-                <tr>
-                    <th class="px-8 py-4">Guest Identity</th>
-                    <th class="px-8 py-4 text-center">Schedule</th>
-                    <th class="px-8 py-4 text-center">Party</th>
-                    <th class="px-8 py-4 text-right">Management Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-up-secondary/5">
-                {% for r in reservations %}
-                <tr class="hover:bg-up-background/30 transition-colors group">
-                    <td class="px-8 py-6">
-                        <span class="block font-bold text-up-secondary uppercase tracking-tight">{{ r.user.username|default:r.guest_name }}</span>
-                        <span class="text-[9px] text-up-primary font-mono italic">Ref: #00{{ r.id }}</span>
-                    </td>
-                    <td class="px-8 py-6 text-center">
-                        <span class="block text-sm font-medium">{{ r.date|date:"D, d M" }}</span>
-                        <span class="text-xs text-up-secondary/50 font-mono">{{ r.time }}</span>
-                    </td>
-                    <td class="px-8 py-6 text-center text-lg font-light">
-                        {{ r.party_size }}
-                    </td>
-                    <td class="px-8 py-6">
-                        <div class="flex items-center justify-end gap-4">
-                            <span class="text-[9px] font-black uppercase px-3 py-1 rounded border
-                                {% if r.status == 'CONFIRMED' %} border-green-200 text-green-700 bg-green-50
-                                {% elif r.status == 'PENDING' %} border-up-primary/30 text-up-primary bg-up-primary/5
-                                {% else %} border-gray-200 text-gray-400 bg-gray-50 {% endif %}">
-                                {{ r.status }}
-                            </span>
-
-                            {% if r.status == 'PENDING' %}
-                            <div class="flex gap-2">
-                                <a href="{% url 'dashboard:update_status' r.pk 'confirm' %}" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Confirm Booking">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                </a>
-                                <a href="{% url 'dashboard:update_status' r.pk 'cancel' %}" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Reject/Cancel">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                </a>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+</main>
 {% endblock %}
