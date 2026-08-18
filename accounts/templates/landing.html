@@ -1,560 +1,405 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urban Palate | The Executive Culinary Experience</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Urban Palate | Executive Culinary Experience</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --gold:      #A87C39;
-            --gold-lt:   rgba(168,124,57,0.12);
-            --gold-glow: rgba(168,124,57,0.25);
-            --slate:     #1e2533;
-            --slate-mid: #2c3a4e;
-            --parchment: #F6F2EB;
-            --cream:     #FDFBF7;
-            --ink:       #1a1a1a;
-            --muted:     #8a8070;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'up-amber': '#F59E0B',
+                        'up-gold': '#A87C39',
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Jost', 'sans-serif'],
+                    }
+                }
+            }
         }
+    </script>
 
-        html, body {
-            height: 100%;
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
             font-family: 'Jost', sans-serif;
-            background: var(--parchment);
-            color: var(--ink);
+            transition: background-color 650ms cubic-bezier(0.4, 0, 0.2, 1);
             overflow-x: hidden;
         }
 
-        /* ── SUBTLE PARCHMENT TEXTURE ── */
-        body::before {
-            content: '';
+        .grain-overlay {
             position: fixed;
             inset: 0;
-            background-image:
-                radial-gradient(ellipse at 20% 80%, rgba(168,124,57,0.06) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(30,37,51,0.04) 0%, transparent 50%);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
             pointer-events: none;
-            z-index: 0;
+            z-index: 50;
         }
 
-        /* ── SHELL — centred, viewport-aware ── */
-        .shell {
-            position: relative;
-            z-index: 1;
-            min-height: 100dvh;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
+        .stage-container {
+            perspective: 1200px;
+            perspective-origin: 50% 50%;
         }
 
-        /* ── MAIN CARD ── */
-        .card {
-            width: 100%;
-            max-width: 1080px;
-            background: #fff;
-            border-radius: 2rem;
-            overflow: hidden;
+        .dish-circle {
             box-shadow:
-                0 4px 6px rgba(0,0,0,0.02),
-                0 24px 60px rgba(30,37,51,0.1),
-                0 60px 120px rgba(30,37,51,0.06);
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+                0 35px 60px -15px rgba(0, 0, 0, 0.6),
+                0 0 40px rgba(245, 158, 11, 0.25),
+                inset 0 0 0 8px rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            transition: all 650ms cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* ═══════════════════════════════
-           LEFT PANEL
-        ═══════════════════════════════ */
-        .panel-left {
-            background: var(--slate);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem 2.5rem;
-            min-height: 520px;
+        .dish-circle-animating {
+            transform: rotateY(90deg) rotateX(10deg) scale(0.8);
+            opacity: 0.1;
         }
 
-        /* Layered background effects */
-        .panel-left::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(ellipse at 30% 20%, rgba(168,124,57,0.18) 0%, transparent 55%),
-                radial-gradient(ellipse at 80% 90%, rgba(168,124,57,0.10) 0%, transparent 45%);
-        }
-
-        /* Subtle grid lines for depth */
-        .panel-left::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-
-        .panel-left-inner {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        /* ── IMAGE FRAME ── */
-        .img-frame {
-            position: relative;
-            width: 100%;
-            max-width: 340px;
-        }
-
-        .img-frame-inner {
-            border-radius: 1.25rem;
-            overflow: hidden;
-            border: 10px solid rgba(255,255,255,0.07);
-            box-shadow:
-                0 0 0 1px rgba(168,124,57,0.2),
-                0 30px 60px rgba(0,0,0,0.4);
-            transform: rotate(-1.5deg);
-            transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
-            aspect-ratio: 4/3;
-        }
-
-        .img-frame:hover .img-frame-inner {
-            transform: rotate(0deg) scale(1.02);
-        }
-
-        .img-frame-inner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        /* ── BADGE FLOATING CARD ── */
-        .img-badge {
-            position: absolute;
-            bottom: -1rem;
-            right: -0.75rem;
-            background: #fff;
-            border-radius: 0.875rem;
-            padding: 0.75rem 1rem;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04);
-            text-align: right;
-            z-index: 3;
-        }
-        .img-badge .badge-top {
-            font-family: 'Jost', sans-serif;
-            font-size: 8px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color: var(--muted);
-            display: block;
-            margin-bottom: 2px;
-        }
-        .img-badge .badge-main {
+        .ghost-text {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1rem;
-            font-weight: 600;
-            font-style: italic;
-            color: var(--gold);
-            display: block;
-            line-height: 1;
-        }
-
-        /* ── LOCATION STRIP ── */
-        .location-strip {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-        .location-strip .line {
-            width: 24px;
-            height: 1px;
-            background: rgba(168,124,57,0.4);
-        }
-        .location-strip span {
-            font-family: 'Jost', sans-serif;
-            font-size: 9px;
-            font-weight: 600;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.25);
-        }
-
-        /* ── VERTICAL BRAND TEXT (decorative) ── */
-        .vert-brand {
-            position: absolute;
-            left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%) rotate(-90deg);
-            transform-origin: center center;
-            font-family: 'Jost', sans-serif;
-            font-size: 7px;
-            font-weight: 700;
-            letter-spacing: 0.4em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.08);
-            white-space: nowrap;
-            z-index: 2;
+            letter-spacing: -0.05em;
+            line-height: 0.85;
             user-select: none;
+            pointer-events: none;
+            transition: opacity 800ms ease, transform 800ms ease;
         }
 
-        /* ═══════════════════════════════
-           RIGHT PANEL
-        ═══════════════════════════════ */
-        .panel-right {
-            padding: 3rem 3rem 2.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            background: #fff;
-        }
-
-        /* ── EYEBROW ── */
-        .eyebrow {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            margin-bottom: 1.25rem;
-        }
-        .eyebrow-line {
-            width: 28px;
-            height: 1.5px;
-            background: var(--gold);
-            border-radius: 2px;
-            flex-shrink: 0;
-        }
-        .eyebrow span {
-            font-family: 'Jost', sans-serif;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 0.35em;
-            text-transform: uppercase;
-            color: var(--gold);
-        }
-
-        /* ── HERO HEADING ── */
-        .hero-heading {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(3rem, 5vw, 4.5rem);
-            font-weight: 700;
-            line-height: 0.95;
-            letter-spacing: -0.02em;
-            color: var(--slate);
-            margin-bottom: 0.5rem;
-        }
-        .hero-heading em {
-            font-style: italic;
-            color: var(--gold);
-        }
-
-        .tagline {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.1rem;
-            font-style: italic;
-            font-weight: 300;
-            color: var(--muted);
-            margin-bottom: 1.75rem;
-            letter-spacing: 0.02em;
-        }
-
-        /* ── BODY TEXT ── */
-        .body-text {
-            font-size: 0.85rem;
-            font-weight: 300;
-            line-height: 1.8;
-            color: #666;
-            margin-bottom: 1.75rem;
-        }
-
-        /* ── INFO ROW ── */
-        .info-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            padding: 1.25rem 0;
-            border-top: 1px solid #f0ede8;
-            border-bottom: 1px solid #f0ede8;
-            margin-bottom: 1.75rem;
-        }
-
-        .info-item { padding: 0 0.5rem; }
-        .info-item:first-child { padding-left: 0; border-right: 1px solid #f0ede8; }
-        .info-item:last-child  { padding-right: 0; padding-left: 1.25rem; }
-
-        .info-label {
-            font-family: 'Jost', sans-serif;
-            font-size: 8px;
-            font-weight: 700;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: var(--gold);
-            display: block;
-            margin-bottom: 0.4rem;
-        }
-        .info-value {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--slate);
-            display: block;
-            line-height: 1.3;
-        }
-
-        /* ── BUTTONS ── */
-        .btn-stack { display: flex; flex-direction: column; gap: 0.75rem; }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            font-family: 'Jost', sans-serif;
-            font-weight: 600;
-            font-size: 0.7rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
-        }
-        .btn:active { transform: scale(0.97); }
-
-        .btn-primary {
-            background: var(--slate);
-            color: #fff;
-            box-shadow: 0 8px 28px rgba(30,37,51,0.2);
-        }
-        .btn-primary:hover {
-            background: var(--gold);
-            box-shadow: 0 12px 36px rgba(168,124,57,0.35);
-            transform: translateY(-2px);
-        }
-        .btn-primary i { font-size: 10px; opacity: 0.7; }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--slate);
-            border: 1.5px solid rgba(30,37,51,0.12);
-        }
-        .btn-outline:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-            background: var(--gold-lt);
-            transform: translateY(-2px);
-        }
-
-        /* ── FOOTER ROW ── */
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1.25rem;
-            margin-top: 1.25rem;
-            border-top: 1px solid #f7f4ef;
-        }
-
-        .footer-est {
-            font-family: 'Jost', sans-serif;
-            font-size: 8px;
-            font-weight: 600;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: #ccc;
-        }
-
-        .live-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.45rem;
-        }
-        .live-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
-            animation: live-pulse 2s ease-in-out infinite;
-        }
-        @keyframes live-pulse {
-            0%, 100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.2); }
-            50%       { box-shadow: 0 0 0 6px rgba(34,197,94,0.08); }
-        }
-        .live-text {
-            font-family: 'Jost', sans-serif;
-            font-size: 8px;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: #22c55e;
-        }
-
-        /* ═══════════════════════════════
-           MOBILE — stack vertically
-        ═══════════════════════════════ */
-        @media (max-width: 768px) {
-            .shell { padding: 1rem; align-items: flex-start; }
-            .card {
-                grid-template-columns: 1fr;
-                border-radius: 1.5rem;
-            }
-
-            .panel-left {
-                min-height: auto;
-                padding: 2.5rem 1.75rem 3rem;
-            }
-
-            .img-frame { max-width: 280px; }
-            .vert-brand { display: none; }
-
-            .panel-right {
-                padding: 2rem 1.75rem 1.75rem;
-            }
-
-            .hero-heading { font-size: clamp(2.8rem, 12vw, 3.8rem); }
-
-            .info-row { grid-template-columns: 1fr 1fr; }
-            .info-item:first-child { border-right: 1px solid #f0ede8; }
-        }
-
-        @media (max-width: 400px) {
-            .shell { padding: 0.75rem; }
-            .panel-left  { padding: 2rem 1.25rem 2.5rem; }
-            .panel-right { padding: 1.75rem 1.25rem 1.5rem; }
-            .img-frame   { max-width: 240px; }
-            .img-badge   { display: none; }
-            .hero-heading { font-size: 2.6rem; }
-        }
-
-        /* ── ENTRY ANIMATIONS ── */
-        @keyframes fade-up {
-            from { opacity: 0; transform: translateY(18px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fade-in {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-
-        .panel-left  { animation: fade-in 0.8s ease both; }
-        .eyebrow     { animation: fade-up 0.6s ease both; animation-delay: 0.1s; }
-        .hero-heading{ animation: fade-up 0.6s ease both; animation-delay: 0.18s; }
-        .tagline     { animation: fade-up 0.6s ease both; animation-delay: 0.24s; }
-        .body-text   { animation: fade-up 0.6s ease both; animation-delay: 0.30s; }
-        .info-row    { animation: fade-up 0.6s ease both; animation-delay: 0.36s; }
-        .btn-stack   { animation: fade-up 0.6s ease both; animation-delay: 0.42s; }
-        .card-footer { animation: fade-up 0.6s ease both; animation-delay: 0.48s; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: #F59E0B; border-radius: 4px; }
     </style>
 </head>
 
-<body>
-<div class="shell">
-    <div class="card">
+<body id="app-body" class="h-full text-white bg-[#0a0a0a] relative selection:bg-amber-500 selection:text-black">
 
-        <!-- ═══ LEFT PANEL ═══ -->
-        <div class="panel-left">
-            <div class="vert-brand">Urban Palate · Nairobi · Est. 2026</div>
+    <div class="grain-overlay"></div>
 
-            <div class="panel-left-inner">
-                <!-- Image with badge -->
-                <div class="img-frame">
-                    <div class="img-frame-inner">
-                        <img src="{% static 'img/rest.png' %}"
-                             alt="Urban Palate Dining Interior"
-                             onerror="this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'">
-                    </div>
-                    <div class="img-badge">
-                        <span class="badge-top">Top Rated</span>
-                        <span class="badge-main">2026 Choice</span>
-                    </div>
-                </div>
-
-                <!-- Location strip -->
-                <div class="location-strip">
-                    <div class="line"></div>
-                    <span>Nairobi &nbsp;·&nbsp; Kenya</span>
-                    <div class="line"></div>
-                </div>
-            </div>
+    <!-- HEADER -->
+    <header class="fixed top-0 inset-x-0 z-40 px-6 py-6 lg:px-12 flex items-center justify-between backdrop-blur-md bg-black/10 border-b border-white/10">
+        <div class="flex items-center gap-3">
+            <span class="bg-amber-500 text-black px-2.5 py-1 text-xs font-black tracking-widest rounded-sm uppercase">
+                URBAN PALATE
+            </span>
+            <span class="hidden sm:inline-block text-[10px] font-bold tracking-[0.3em] uppercase text-white/60">
+                GOURMET DINING EXPERIENCE
+            </span>
         </div>
 
-        <!-- ═══ RIGHT PANEL ═══ -->
-        <div class="panel-right">
+        <nav class="hidden md:flex items-center gap-8 text-xs font-bold tracking-widest uppercase">
+            <a href="{% url 'menu:menu_list' %}" class="hover:text-amber-500 transition-colors">Our Menu</a>
+            <a href="{% url 'orders:cart' %}" class="hover:text-amber-500 transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-bag-shopping text-amber-500"></i> Experience
+            </a>
+            <a href="{% url 'reservations:new_reservation' %}" class="hover:text-amber-500 transition-colors">Reservations</a>
+        </nav>
 
-            <!-- Header -->
-            <div>
-                <div class="eyebrow">
-                    <div class="eyebrow-line"></div>
-                    <span>Orlantech Innovations Presents</span>
-                </div>
+        <div class="flex items-center gap-4">
+            <a href="{% url 'reservations:new_reservation' %}" class="hidden sm:inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-[11px] uppercase tracking-wider px-5 py-2.5 rounded-full transition-transform active:scale-95 shadow-lg shadow-amber-500/20">
+                <i class="fa-solid fa-calendar-check"></i> Book Table
+            </a>
+            <button onclick="toggleMenuDrawer()" class="md:hidden text-2xl text-amber-500 p-2 focus:outline-none" aria-label="Open Menu">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+        </div>
+    </header>
 
-                <h1 class="hero-heading">
-                    Urban<br><em>Palate</em>
+    <!-- MAIN SHOWCASE CONTAINER WITH SWIPE & HOVER LISTENERS -->
+    <main id="hero-container" class="min-h-[90vh] pt-28 pb-16 px-6 lg:px-8 flex flex-col justify-between relative overflow-hidden z-10">
+
+        <!-- Background Glow Accents -->
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-amber-500/5 blur-[120px] rounded-full pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-1/4 h-1/2 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+        <!-- Ghost Text Background -->
+        <div class="absolute inset-0 flex items-center justify-center z-0 opacity-15 overflow-hidden pointer-events-none">
+            <h1 id="ghost-title" class="ghost-text text-[18vw] font-black uppercase text-center whitespace-nowrap">
+                URBAN PALATE
+            </h1>
+        </div>
+
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10 my-auto">
+
+            <!-- Left Text Content -->
+            <div class="z-10 text-center lg:text-left order-2 lg:order-1">
+                <span id="dish-category" class="inline-block text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] text-amber-500 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-amber-500/30 mb-4">
+                    NAIROBI'S PREMIER CULINARY EXPERIENCE
+                </span>
+
+                <h1 id="dish-name" class="text-5xl md:text-7xl font-black italic tracking-tighter text-white leading-[0.9] mb-6">
+                    THE <span class="text-amber-500">URBAN</span><br>PALATE
                 </h1>
 
-                <p class="tagline">A sensory journey into refined dining.</p>
-
-                <p class="body-text">
-                    Step into an environment where culinary mastery meets executive comfort. Our curated seasonal menus are designed for the discerning palate — where every detail, from plating to ambiance, is considered an art form.
+                <p id="dish-desc" class="text-lg md:text-xl text-gray-400 mb-8 max-w-lg mx-auto lg:mx-0 font-light leading-relaxed">
+                    We don't just serve food; we engineer flavor. <span class="text-white font-medium">Explore freely</span>—no account needed to browse.
                 </p>
 
-                <!-- Info Row -->
-                <div class="info-row">
-                    <div class="info-item">
-                        <span class="info-label">
-                            <i class="fas fa-map-marker-alt" style="font-size:7px;"></i>&nbsp; Location
-                        </span>
-                        <span class="info-value">Grand Avenue,<br>Nairobi</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">
-                            <i class="fas fa-clock" style="font-size:7px;"></i>&nbsp; Service Hours
-                        </span>
-                        <span class="info-value">06:00 — 01:30</span>
-                    </div>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center">
+                    <a href="{% url 'menu:menu_list' %}"
+                       class="group relative inline-flex items-center justify-center bg-amber-500 text-black py-4 px-10 rounded-2xl text-lg font-black uppercase tracking-widest transition-all hover:bg-amber-400 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+                        View Menu
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </a>
+
+                    <a href="{% url 'reservations:new_reservation' %}"
+                       class="inline-flex items-center justify-center border-2 border-white/20 text-white py-4 px-10 rounded-2xl text-lg font-bold hover:bg-white hover:text-black transition-all">
+                        Book Table
+                    </a>
                 </div>
             </div>
 
-            <!-- Buttons -->
-            <div class="btn-stack">
-                <a href="{% url 'accounts:login' %}" class="btn btn-primary">
-                    <i class="fas fa-utensils"></i>
-                    Secure a Table
-                </a>
-                <a href="{% url 'accounts:register' %}" class="btn btn-outline">
-                    <i class="fas fa-crown" style="font-size:9px;"></i>
-                    Join the Membership
-                </a>
-            </div>
+            <!-- Right Circular 3D Stage -->
+            <div class="relative order-1 lg:order-2 flex justify-center stage-container">
+                <div id="dish-stage" class="relative w-[300px] h-[300px] sm:w-[420px] sm:h-[420px] rounded-full flex items-center justify-center transition-all duration-700">
+                    <div class="absolute inset-0 rounded-full border-2 border-amber-500/30 scale-105 animate-[spin_10s_linear_infinite]"></div>
+                    <div class="absolute inset-0 rounded-full border border-white/10 scale-125"></div>
 
-            <!-- Footer -->
-            <div class="card-footer">
-                <span class="footer-est">Est. 2026</span>
-                <div class="live-badge">
-                    <div class="live-dot"></div>
-                    <span class="live-text">Reservations Open</span>
+                    <div id="dish-circle-element" class="w-full h-full rounded-full overflow-hidden border-4 sm:border-8 border-amber-500/80 dish-circle relative bg-neutral-900 flex items-center justify-center shadow-2xl shadow-amber-500/20">
+                        <img id="dish-image"
+                             src=""
+                             alt=""
+                             class="w-full h-full object-cover transition-all duration-700 transform scale-100 hover:scale-110">
+                        <div id="no-image-fallback" class="hidden text-center p-6">
+                            <i class="fa-solid fa-utensils text-4xl text-amber-500 mb-2 block"></i>
+                            <span class="text-xs font-bold uppercase tracking-widest text-white/70">Urban Palate</span>
+                        </div>
+                    </div>
+
+                    <div class="absolute bottom-2 right-2 sm:bottom-6 sm:right-6 bg-black/80 backdrop-blur-md border border-amber-500/50 px-4 py-2 sm:px-6 sm:py-3 rounded-2xl shadow-2xl flex items-center gap-2 z-20">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-white/70">Price</span>
+                        <span id="dish-price" class="text-base sm:text-xl font-serif font-bold text-amber-400">KES 0</span>
+                    </div>
                 </div>
             </div>
 
         </div>
+
+        <!-- Carousel Bottom Control Bar -->
+        <div class="max-w-7xl mx-auto w-full flex items-center justify-between pt-6 border-t border-white/10 relative z-10">
+            <span id="carousel-counter" class="text-xs font-black tracking-widest text-amber-500 font-mono">
+                01 / 04
+            </span>
+
+            <div class="flex items-center gap-3">
+                <button onclick="handleManualNavigate('prev')" class="w-12 h-12 rounded-full border border-white/20 bg-black/30 hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-all flex items-center justify-center text-sm active:scale-95" aria-label="Previous">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button onclick="handleManualNavigate('next')" class="w-12 h-12 rounded-full border border-white/20 bg-black/30 hover:bg-amber-500 hover:text-black hover:border-amber-500 transition-all flex items-center justify-center text-sm active:scale-95" aria-label="Next">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- DRAWER MENU -->
+    <div id="menu-drawer" class="fixed inset-y-0 right-0 w-full sm:w-[480px] bg-neutral-950/95 backdrop-blur-2xl z-50 transform translate-x-full transition-transform duration-500 border-l border-white/10 p-6 sm:p-10 overflow-y-auto flex flex-col justify-between">
+        <div>
+            <div class="flex items-center justify-between pb-6 border-b border-white/10 mb-8">
+                <span class="text-xs font-black tracking-[0.3em] uppercase text-amber-500">Full Selection</span>
+                <button onclick="toggleMenuDrawer()" class="text-2xl text-white/60 hover:text-white p-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-8">
+                {% for category in categories %}
+                    {% if category.items.all %}
+                        <div>
+                            <h3 class="text-xl font-serif font-bold text-amber-500 italic mb-4">{{ category.name }}</h3>
+                            <div class="space-y-4">
+                                {% for item in category.items.all %}
+                                    <div class="flex items-center justify-between gap-4 p-3 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+                                        <div class="flex items-center gap-3">
+                                            {% if item.image %}
+                                                <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-12 h-12 rounded-full object-cover border border-amber-500/30">
+                                            {% else %}
+                                                <div class="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                                                    <i class="fa-solid fa-utensils text-xs text-amber-500"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h4 class="text-sm font-bold text-white">{{ item.name }}</h4>
+                                                <span class="text-[10px] text-white/50">{{ item.prep_time }} MINS</span>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-sm font-bold text-amber-400 block">KES {{ item.price|floatformat:0 }}</span>
+                                            <form method="post" action="{% url 'orders:add_to_cart' item.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="text-[9px] font-black uppercase text-amber-500 hover:underline mt-1">
+                                                    + Add
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
-</div>
+
+    <!-- JAVASCRIPT ROTATION & GESTURE ENGINE -->
+    <script>
+        const DISHES = [
+            {% if static_img_steak %}
+            {
+                name: 'THE <span class="text-amber-500">URBAN</span><br>PALATE',
+                category: "NAIROBI'S PREMIER CULINARY EXPERIENCE",
+                price: "KES 2,800",
+                desc: "We don't just serve food; we engineer flavor. Explore freely—no account needed to browse.",
+                image: "{% static 'img/steak.png' %}",
+                bg: '#0a0a0a',
+                ghost: 'URBAN'
+            },
+            {% endif %}
+            {% for category in categories %}
+                {% for item in category.items.all %}
+                {
+                    name: "{{ item.name|escapejs }}",
+                    category: "{{ category.name|upper|escapejs }}",
+                    price: "KES {{ item.price|floatformat:0 }}",
+                    desc: "{{ item.description|escapejs }}",
+                    image: "{% if item.image %}{{ item.image.url }}{% endif %}",
+                    bg: '#0a0a0a',
+                    ghost: "{{ item.name|slugify|upper|slice:':8' }}"
+                },
+                {% endfor %}
+            {% endfor %}
+        ];
+
+        let activeIndex = 0;
+        let isAnimating = false;
+        let isPaused = false;
+        let autoRotateTimer = null;
+        const ROTATION_INTERVAL = 4000;
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function renderDish(index) {
+            if (DISHES.length === 0) return;
+            const dish = DISHES[index];
+            const circleEl = document.getElementById('dish-circle-element');
+            const imgEl = document.getElementById('dish-image');
+            const fallbackEl = document.getElementById('no-image-fallback');
+
+            circleEl.classList.add('dish-circle-animating');
+
+            setTimeout(() => {
+                document.getElementById('app-body').style.backgroundColor = dish.bg;
+                document.getElementById('dish-name').innerHTML = dish.name;
+                document.getElementById('ghost-title').innerText = dish.ghost;
+                document.getElementById('dish-category').innerText = dish.category;
+                document.getElementById('dish-price').innerText = dish.price;
+                document.getElementById('dish-desc').innerHTML = dish.desc + ' <span class="text-white font-medium">Explore freely</span>—no account needed to browse.';
+
+                if (dish.image && dish.image.trim() !== '') {
+                    imgEl.src = dish.image;
+                    imgEl.classList.remove('hidden');
+                    fallbackEl.classList.add('hidden');
+                } else {
+                    imgEl.classList.add('hidden');
+                    fallbackEl.classList.remove('hidden');
+                }
+
+                const paddedCurrent = String(index + 1).padStart(2, '0');
+                const paddedTotal = String(DISHES.length).padStart(2, '0');
+                document.getElementById('carousel-counter').innerText = `${paddedCurrent} / ${paddedTotal}`;
+
+                circleEl.classList.remove('dish-circle-animating');
+            }, 325);
+        }
+
+        function navigate(direction) {
+            if (isAnimating || DISHES.length === 0) return;
+            isAnimating = true;
+
+            if (direction === 'next') {
+                activeIndex = (activeIndex + 1) % DISHES.length;
+            } else {
+                activeIndex = (activeIndex - 1 + DISHES.length) % DISHES.length;
+            }
+
+            renderDish(activeIndex);
+
+            setTimeout(() => {
+                isAnimating = false;
+            }, 650);
+        }
+
+        function startAutoRotation() {
+            stopAutoRotation();
+            if (DISHES.length <= 1) return;
+
+            autoRotateTimer = setInterval(() => {
+                if (!isPaused) {
+                    navigate('next');
+                }
+            }, ROTATION_INTERVAL);
+        }
+
+        function stopAutoRotation() {
+            if (autoRotateTimer) {
+                clearInterval(autoRotateTimer);
+                autoRotateTimer = null;
+            }
+        }
+
+        function handleManualNavigate(direction) {
+            isPaused = true;
+            navigate(direction);
+            setTimeout(() => { isPaused = false; }, 6000);
+        }
+
+        const heroContainer = document.getElementById('hero-container');
+        if (heroContainer) {
+            heroContainer.addEventListener('mouseenter', () => { isPaused = true; });
+            heroContainer.addEventListener('mouseleave', () => { isPaused = false; });
+
+            heroContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.targetTouches[0].clientX;
+                isPaused = true;
+            }, { passive: true });
+
+            heroContainer.addEventListener('touchmove', (e) => {
+                touchEndX = e.targetTouches[0].clientX;
+            }, { passive: true });
+
+            heroContainer.addEventListener('touched', () => {
+                isPaused = false;
+                const swipeDistance = touchStartX - touchEndX;
+                if (Math.abs(swipeDistance) > 50) {
+                    if (swipeDistance > 0) navigate('next');
+                    else navigate('prev');
+                }
+            });
+        }
+
+        function toggleMenuDrawer() {
+            document.getElementById('menu-drawer').classList.toggle('translate-x-full');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (DISHES.length > 0) {
+                renderDish(0);
+                startAutoRotation();
+            }
+        });
+    </script>
 </body>
 </html>
