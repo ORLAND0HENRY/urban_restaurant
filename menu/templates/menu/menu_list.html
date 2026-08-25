@@ -2,78 +2,283 @@
 {% load static %}
 
 {% block content %}
-<main class="min-h-screen bg-up-background">
-    <header class="container mx-auto px-4 pt-20 pb-16 text-center">
-        <span class="text-up-primary text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Seasonal Selection</span>
-        <h1 class="text-6xl md:text-7xl font-serif font-bold text-up-secondary tracking-tighter">
-            The <span class="italic text-up-primary text-5xl md:text-6xl">Culinary</span> List
-        </h1>
-        <div class="mt-8 flex justify-center gap-4">
-            <div class="h-px w-12 bg-up-primary/30 self-center"></div>
-            <p class="text-up-secondary/50 text-xs font-medium uppercase tracking-widest">Urban Palate Nairobi</p>
-            <div class="h-px w-12 bg-up-primary/30 self-center"></div>
-        </div>
-    </header>
+<!-- Tailwind CSS & Custom Config -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          DARK: '#1D3045',
+          'up-primary': '#d4af37', // Assuming gold-ish from original
+          'up-secondary': '#1D3045',
+          'up-background': 'transparent',
+          'up-light': '#f3f4f6',
+        },
+        fontFamily: {
+          sans: ['"Helvetica Neue ME"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+          serif: ['"Helvetica Neue ME"', 'serif'], // Overriding to match cinematic font
+        }
+      }
+    }
+  }
+</script>
 
-    <div class="container mx-auto px-4 pb-20 max-w-7xl">
-        {% for category in categories %}
-            {% if category.items.all %}
-                <section class="mb-20">
-                    <div class="flex flex-col mb-10 text-center md:text-left">
-                        <h2 class="text-2xl font-serif font-bold text-up-secondary italic">{{ category.name }}</h2>
-                        <div class="h-1 w-12 bg-up-primary mt-2 mx-auto md:mx-0"></div>
-                    </div>
+<!-- Custom Fonts & Styles -->
+<link href="https://db.onlinewebfonts.com/c/95cecf452d3208890088a5b4c19c7ecf?family=Helvetica+Neue+ME" rel="stylesheet">
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    overflow-x: hidden;
+    font-family: 'Helvetica Neue ME', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #000;
+  }
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                        {% for item in category.items.all %}
-                            <article class="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-up-secondary/5">
+  /* Hide scrollbar for cleaner look */
+  ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-                                <div class="relative aspect-[4/5] overflow-hidden bg-up-light">
-                                    <div id="skeleton-{{ item.id }}" class="absolute inset-0 animate-pulse bg-up-light flex items-center justify-center">
-                                        <span class="text-up-primary/20 font-serif italic">Loading...</span>
-                                    </div>
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
-                                    {% if item.image %}
-                                        <img src="{{ item.image.url }}"
-                                             alt="{{ item.name }}"
-                                             onload="document.getElementById('skeleton-{{ item.id }}').remove();"
-                                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                                    {% endif %}
+  .stagger-item {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
-                                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg">
-                                        <span class="text-up-secondary font-bold text-sm">
-                                            {{ item.price|floatformat:0 }}<span class="text-[10px] ml-1 text-up-primary uppercase tracking-tighter">Kes</span>
-                                        </span>
-                                    </div>
-                                </div>
+  .stagger-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
 
-                                <div class="p-6">
-                                    <div class="flex justify-between items-start mb-2">
-                                        <h3 class="text-lg font-bold text-up-secondary tracking-tight">{{ item.name }}</h3>
-                                        <div class="flex gap-1">
-                                            {% if item.is_vegan %}<span title="Vegan" class="text-xs">🌿</span>{% endif %}
-                                            {% if item.spiciness > 5 %}<span title="Spicy" class="text-xs">🔥</span>{% endif %}
-                                        </div>
-                                    </div>
+<!-- FIXED VIDEO BACKGROUND -->
+<div class="fixed inset-0 w-full h-screen z-0 overflow-hidden bg-black pointer-events-none">
+  <video
+    id="bg-video"
+    src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260821_114821_a8ca298f-be2c-4613-a4dd-51b69e16bbde.mp4"
+    class="absolute inset-0 w-full h-full object-cover"
+    muted
+    playsinline
+    preload="auto">
+  </video>
+  <div class="absolute inset-0 bg-black/20"></div> <!-- Slight overlay for text readability -->
+</div>
 
-                                    <p class="text-xs text-up-secondary/50 mb-6 font-medium tracking-wide">
-                                        Prep: {{ item.prep_time }} MINS • Freshly Prepared
-                                    </p>
+<!-- NAVBAR (Sticky/Fixed) -->
+<nav id="navbar" class="fixed top-0 w-full z-50 px-6 sm:px-8 md:px-12 pt-8 sm:pt-12 pb-6 flex items-center justify-between transition-colors duration-500 text-DARK">
+  <div class="hidden lg:flex items-center gap-8 xl:gap-10">
+    <a href="#" class="text-xs tracking-[0.15em] uppercase font-medium hover:opacity-70 relative">
+      CULINARY MENU
+      <div class="absolute -bottom-3 left-0 w-full h-[2px] bg-current"></div>
+    </a>
+    <a href="#" class="text-xs tracking-[0.15em] uppercase font-medium hover:opacity-70">RESERVATIONS</a>
+    <a href="#" class="text-xs tracking-[0.15em] uppercase font-medium hover:opacity-70">LOCATIONS</a>
+  </div>
 
-                                    <form method="post" action="{% url 'orders:add_to_cart' item.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit"
-                                                class="w-full py-4 bg-up-secondary hover:bg-up-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl transition-all duration-300 shadow-lg shadow-up-secondary/10">
-                                            Add to Experience
-                                        </button>
-                                    </form>
-                                </div>
-                            </article>
-                        {% endfor %}
-                    </div>
-                </section>
-            {% endif %}
-        {% endfor %}
+  <div class="hidden sm:flex items-center gap-6 ml-auto">
+    <div class="flex items-center gap-2">
+      <span class="text-xs tracking-[0.2em] uppercase font-medium">INFO</span>
+      <div class="w-5 h-5 rounded-full bg-current flex items-center justify-center text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      </div>
     </div>
-</main>
+    <span class="text-xs tracking-[0.2em] uppercase font-medium">MENU</span>
+  </div>
+
+  <!-- Mobile Hamburger -->
+  <button class="lg:hidden flex flex-col gap-[5px]" onclick="document.getElementById('mobile-menu').classList.remove('opacity-0', 'invisible'); document.body.style.overflow='hidden';">
+    <div class="w-6 h-[2px] bg-current"></div>
+    <div class="w-6 h-[2px] bg-current"></div>
+    <div class="w-4 h-[2px] bg-current"></div>
+  </button>
+</nav>
+
+<!-- MOBILE MENU OVERLAY -->
+<div id="mobile-menu" class="fixed inset-0 z-[100] bg-DARK opacity-0 invisible transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col">
+  <div class="flex justify-end px-6 sm:px-8 pt-8 sm:pt-12">
+    <button class="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center text-white hover:border-white transition-colors" onclick="document.getElementById('mobile-menu').classList.add('opacity-0', 'invisible'); document.body.style.overflow='';">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="flex-1 flex flex-col justify-center px-8 sm:px-12 gap-6">
+    <a href="#" class="text-2xl sm:text-3xl font-light tracking-wide uppercase text-white hover:text-white transition-colors">Culinary Menu</a>
+    <a href="#" class="text-2xl sm:text-3xl font-light tracking-wide uppercase text-white/60 hover:text-white transition-colors">Reservations</a>
+    <a href="#" class="text-2xl sm:text-3xl font-light tracking-wide uppercase text-white/60 hover:text-white transition-colors">Locations</a>
+  </div>
+</div>
+
+<!-- SCROLL CONTAINER -->
+<!-- Making the container very tall to allow scrolling through the video -->
+<div id="scroll-container" class="relative z-10" style="height: 400vh;">
+
+  <!-- Section 1: Hero (Tied to scroll 0% - 25%) -->
+  <section id="section-1" class="fixed inset-0 flex flex-col justify-center px-6 sm:px-8 md:px-20 lg:px-32 transition-opacity duration-300 pointer-events-none">
+    <div class="pointer-events-auto">
+      <span class="stagger-item text-DARK text-sm tracking-[0.5em] uppercase mb-4 block" style="transition-delay: 0ms;">Seasonal Selection</span>
+      <h1 class="stagger-item text-[clamp(2rem,5vw,5rem)] font-light uppercase leading-[1.2] text-DARK max-w-4xl" style="transition-delay: 150ms;">
+        The Culinary List
+      </h1>
+      <p class="stagger-item text-sm tracking-[0.3em] uppercase text-DARK/90 mt-6" style="transition-delay: 300ms;">
+        Urban Palate Nairobi
+      </p>
+    </div>
+  </section>
+
+  <!-- Section 2 & Beyond: The Menu Items (Tied to scroll > 30%) -->
+  <section id="section-2" class="fixed inset-0 pt-32 pb-20 px-6 sm:px-8 md:px-20 lg:px-32 overflow-y-auto opacity-0 transition-opacity duration-300 pointer-events-none">
+    <div class="max-w-7xl mx-auto pointer-events-auto pb-40">
+
+      {% for category in categories %}
+        {% if category.items.all %}
+          <div class="mb-24 stagger-item">
+            <div class="flex flex-col mb-12 text-center md:text-left">
+              <h2 class="text-3xl md:text-4xl font-light tracking-wide text-white uppercase">{{ category.name }}</h2>
+              <div class="h-[1px] w-24 bg-white/30 mt-4 mx-auto md:mx-0"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+              {% for item in category.items.all %}
+                <article class="glass-card rounded-xl overflow-hidden group">
+                  <div class="relative aspect-[4/3] overflow-hidden">
+                    <div id="skeleton-{{ item.id }}" class="absolute inset-0 animate-pulse bg-white/5 flex items-center justify-center">
+                      <span class="text-white/20 text-xs tracking-widest uppercase">Loading</span>
+                    </div>
+
+                    {% if item.image %}
+                      <img src="{{ item.image.url }}"
+                           alt="{{ item.name }}"
+                           onload="document.getElementById('skeleton-{{ item.id }}').remove();"
+                           class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700">
+                    {% endif %}
+
+                    <div class="absolute top-4 right-4 glass-card px-4 py-2 rounded-full">
+                      <span class="text-white font-light text-sm tracking-wider">
+                        {{ item.price|floatformat:0 }}<span class="text-[10px] ml-1 text-white/70 uppercase">Kes</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="p-6 md:p-8">
+                    <div class="flex justify-between items-start mb-4">
+                      <h3 class="text-xl font-light text-white tracking-wide uppercase">{{ item.name }}</h3>
+                      <div class="flex gap-2 text-sm">
+                        {% if item.is_vegan %}<span title="Vegan">🌿</span>{% endif %}
+                        {% if item.spiciness > 5 %}<span title="Spicy">🔥</span>{% endif %}
+                      </div>
+                    </div>
+
+                    <p class="text-xs text-white/50 mb-8 tracking-[0.2em] uppercase">
+                      Prep: {{ item.prep_time }} MINS
+                    </p>
+
+                    <form method="post" action="{% url 'orders:add_to_cart' item.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="w-full py-4 border border-white/20 hover:bg-white hover:text-black text-white text-[10px] font-medium uppercase tracking-[0.2em] transition-all duration-500">
+                        Add to Experience
+                      </button>
+                    </form>
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+    </div>
+  </section>
+
+</div>
+
+<!-- Scroll & Video Logic -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const video = document.getElementById('bg-video');
+    const nav = document.getElementById('navbar');
+    const s1 = document.getElementById('section-1');
+    const s2 = document.getElementById('section-2');
+    const staggerItems = document.querySelectorAll('.stagger-item');
+
+    let targetTime = 0;
+    let currentTime = 0;
+    const LERP_TAU = 8;
+    let lastTime = performance.now();
+
+    // Ensure video is loaded to get duration
+    video.addEventListener('loadedmetadata', () => {
+      requestAnimationFrame(renderLoop);
+    });
+
+    // Fallback if metadata is already loaded
+    if(video.readyState >= 1) {
+      requestAnimationFrame(renderLoop);
+    }
+
+    function renderLoop(time) {
+      const deltaSeconds = (time - lastTime) / 1000;
+      lastTime = time;
+      const dt = Math.min(0.1, deltaSeconds);
+
+      // Calculate scroll progress (0 to 1)
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      let p = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+
+      // Update Target Time based on progress
+      if (video.duration) {
+        targetTime = p * video.duration;
+
+        // Lerp logic for smooth scrubbing
+        currentTime += (targetTime - currentTime) * (1 - Math.exp(-dt * LERP_TAU));
+        if (Math.abs(targetTime - currentTime) < 0.002) currentTime = targetTime;
+
+        // Only update video time if it significantly changed
+        if (Math.abs(video.currentTime - currentTime) > 0.01) {
+          video.currentTime = currentTime;
+        }
+      }
+
+      // SECTION OPACITY LOGIC (Matching the cinematic prompt phases)
+      // Phase 1 (Hero): 0 -> 25%
+      if (p < 0.15) {
+        s1.style.opacity = 1;
+        s1.style.pointerEvents = 'auto';
+        nav.classList.replace('text-white', 'text-DARK');
+      } else {
+        s1.style.opacity = Math.max(0, 1 - (p - 0.15) / 0.10);
+        if (s1.style.opacity == 0) s1.style.pointerEvents = 'none';
+      }
+
+      // Phase 2 (Menu): 30% -> End
+      if (p < 0.25) {
+        s2.style.opacity = 0;
+        s2.style.pointerEvents = 'none';
+      } else {
+        s2.style.opacity = Math.min(1, (p - 0.25) / 0.10);
+        s2.style.pointerEvents = 'auto';
+        nav.classList.replace('text-DARK', 'text-white');
+      }
+
+      // Stagger Animations based on section opacity
+      if (parseFloat(s1.style.opacity) > 0.3) {
+        s1.querySelectorAll('.stagger-item').forEach(el => el.classList.add('visible'));
+      } else {
+        s1.querySelectorAll('.stagger-item').forEach(el => el.classList.remove('visible'));
+      }
+
+      if (parseFloat(s2.style.opacity) > 0.3) {
+        s2.querySelectorAll('.stagger-item').forEach(el => el.classList.add('visible'));
+      } else {
+        s2.querySelectorAll('.stagger-item').forEach(el => el.classList.remove('visible'));
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
+  });
+</script>
 {% endblock %}

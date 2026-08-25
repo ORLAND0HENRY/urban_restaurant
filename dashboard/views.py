@@ -1,30 +1,29 @@
-import pandas as pd
-from django.shortcuts import render
+from django.db.models import Avg, Sum
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from reservations.models import Reservation
-#from orders.models import Order
-from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
+from reservations.models import Reservation
 
 @login_required
 def dashboard_view(request):
     # --- ADMIN PERSONA ---
     if request.user.is_staff:
         res_qs = Reservation.objects.all().order_by('-date', '-time')
-        # orders_qs = Order.objects.all().order_by('-created_at') # Future logic
 
-        stats = {'avg_guests': 0, 'total_covers': 0}
+        # Compute aggregations directly in the database engine
+        metrics = res_qs.aggregate(
+            avg_guests=Avg('party_size'),
+            total_covers=Sum('party_size')
+        )
 
-        if res_qs.exists():
-            df = pd.DataFrame(list(res_qs.values('party_size', 'status')))
-            stats['avg_guests'] = round(df['party_size'].mean(), 1)
-            stats['total_covers'] = int(df['party_size'].sum())
+        stats = {
+            'avg_guests': round(metrics['avg_guests'] or 0.0, 1),
+            'total_covers': metrics['total_covers'] or 0,
+        }
 
         context = {
             'page_title': 'Executive Control',
             'reservations': res_qs,
-            # 'orders': orders_qs, # Pass both to the same dashboard
             'stats': stats,
         }
         return render(request, 'dashboard/admin_dashboard.html', context)
@@ -43,13 +42,15 @@ def dashboard_view(request):
 def update_reservation_status(request, pk, action):
     reservation = get_object_or_404(Reservation, pk=pk)
 
-    if action == 'confirm':
-        reservation.status = 'CONFIRMED'
-    elif action == 'cancel':
-        reservation.status = 'CANCELLED'
-    elif action == 'seat':
-        reservation.status = 'SEATED'
+    status_map = {
+        'confirm': 'CONFIRMED',
+        'cancel': 'CANCELLED',
+        'seat': 'SEATED',
+    }
 
-    reservation.save()
-    messages.success(request, f"Reservation #{pk} has been {action}ed.")
+    if action in status_map:
+        reservation.status = status_map[action]
+        reservation.save()
+        messages.success(request, f"Reservation #{pk} has been {action}ed.")
+
     return redirect('dashboard:home')
