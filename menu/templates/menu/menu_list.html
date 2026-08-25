@@ -2,283 +2,595 @@
 {% load static %}
 
 {% block content %}
-<!-- Tailwind CSS & Custom Config -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          DARK: '#1D3045',
-          'up-primary': '#d4af37', // Assuming gold-ish from original
-          'up-secondary': '#1D3045',
-          'up-background': 'transparent',
-          'up-light': '#f3f4f6',
-        },
-        fontFamily: {
-          sans: ['"Helvetica Neue ME"', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
-          serif: ['"Helvetica Neue ME"', 'serif'], // Overriding to match cinematic font
-        }
-      }
-    }
-  }
-</script>
-
-<!-- Custom Fonts & Styles -->
-<link href="https://db.onlinewebfonts.com/c/95cecf452d3208890088a5b4c19c7ecf?family=Helvetica+Neue+ME" rel="stylesheet">
 <style>
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    overflow-x: hidden;
-    font-family: 'Helvetica Neue ME', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    background-color: #000;
-  }
+  /* Custom scrollbar setup */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: #0B0C0E; }
+  ::-webkit-scrollbar-thumb { background: #a67c52; border-radius: 4px; }
 
-  /* Hide scrollbar for cleaner look */
-  ::-webkit-scrollbar { width: 0px; background: transparent; }
+  /* Dark luxury overlay scope for the cinematic menu experience within base layout */
+  .cinematic-menu-wrapper {
+    background-color: #0B0C0E;
+    color: #F7F4EF;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    margin-top: -2rem; /* Pull up to seam seamlessly with base main padding */
+    margin-bottom: -3rem;
+  }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(20, 23, 28, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(166, 124, 82, 0.2);
   }
 
-  .stagger-item {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  .glass-sticky {
+    background: rgba(11, 12, 14, 0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .stagger-item.visible {
-    opacity: 1;
-    transform: translateY(0);
+  .gold-gradient-text {
+    background: linear-gradient(135deg, #F3E5AB 0%, #a67c52 50%, #8A5A2B 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
+
+  .gold-glow {
+    box-shadow: 0 0 25px rgba(166, 124, 82, 0.3);
+  }
+
+  /* Utility to hide scrollbars for horizontal pill slider */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 
-<!-- FIXED VIDEO BACKGROUND -->
-<div class="fixed inset-0 w-full h-screen z-0 overflow-hidden bg-black pointer-events-none">
-  <video
-    id="bg-video"
-    src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260821_114821_a8ca298f-be2c-4613-a4dd-51b69e16bbde.mp4"
-    class="absolute inset-0 w-full h-full object-cover"
-    muted
-    playsinline
-    preload="auto">
-  </video>
-  <div class="absolute inset-0 bg-black/20"></div> <!-- Slight overlay for text readability -->
-</div>
+<!-- Wrapper for Cinematic Scope inside Django Base Template -->
+<div class="cinematic-menu-wrapper relative min-h-screen px-2 sm:px-4 py-6 overflow-hidden">
 
-<!-- NAVBAR (Sticky/Fixed) -->
-<nav id="navbar" class="fixed top-0 w-full z-50 px-6 sm:px-8 md:px-12 pt-8 sm:pt-12 pb-6 flex items-center justify-between transition-colors duration-500 text-DARK">
-  <div class="hidden lg:flex items-center gap-8 xl:gap-10">
-    <a href="#" class="text-xs tracking-[0.15em] uppercase font-medium hover:opacity-70 relative">
-      CULINARY MENU
-      <div class="absolute -bottom-3 left-0 w-full h-[2px] bg-current"></div>
-    </a>
-    <a href="#" class="text-xs tracking-[0.15em] uppercase font-medium hover:opacity-70">RESERVATIONS</a>
-    <a href="#" class="text-xs tracking-[0.15em] uppercase font-medium hover:opacity-70">LOCATIONS</a>
+  <!-- Ambient Culinary Video & Particle Background -->
+  <div class="fixed inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
+    <video
+      id="bg-video"
+      src="https://assets.mixkit.co/videos/preview/mixkit-chef-cooking-with-fire-in-a-kitchen-41566-large.mp4"
+      class="absolute inset-0 w-full h-full object-cover opacity-25 filter brightness-75 contrast-125 scale-105"
+      muted
+      playsinline
+      preload="auto"
+      loop>
+    </video>
+
+    <!-- Golden Embers Particle Canvas Overlay -->
+    <canvas id="embers-canvas" class="absolute inset-0 w-full h-full opacity-50"></canvas>
+
+    <!-- Dark Gradient Overlay for optimal legibility -->
+    <div class="absolute inset-0 bg-gradient-to-t from-[#0B0C0E] via-[#0B0C0E]/80 to-[#0B0C0E]/90"></div>
   </div>
 
-  <div class="hidden sm:flex items-center gap-6 ml-auto">
-    <div class="flex items-center gap-2">
-      <span class="text-xs tracking-[0.2em] uppercase font-medium">INFO</span>
-      <div class="w-5 h-5 rounded-full bg-current flex items-center justify-center text-white">
-        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+  <!-- Main Content Layer -->
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-20">
+
+    <!-- TOP NAVIGATION BAR (Return to Main Site + Quick Actions) -->
+    <nav class="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
+      <!-- Back to Main Site Button -->
+      <a href="{% url 'home'|default:'/' %}" class="inline-flex items-center gap-2.5 px-4 py-2 rounded-xl glass-card text-xs font-semibold uppercase tracking-widest text-up-light hover:text-white hover:border-up-primary transition-all group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-up-primary group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Return to Main Site</span>
+      </a>
+
+      <!-- Current Page Breadcrumb Badge -->
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-up-primary/10 border border-up-primary/30 text-[11px] uppercase tracking-wider text-up-primary">
+        <span>Urban Palate</span>
+        <span class="text-white/30">•</span>
+        <span class="text-white/80">Menu Experience</span>
+      </div>
+    </nav>
+
+    <!-- Header Section for Culinary List -->
+    <header class="text-center py-6 sm:py-10">
+      <div class="inline-flex items-center gap-3 mb-3">
+        <div class="h-[1px] w-8 sm:w-12 bg-up-primary/60"></div>
+        <span class="text-up-primary text-[10px] sm:text-xs font-bold uppercase tracking-[0.4em]">Urban Palate Nairobi</span>
+        <div class="h-[1px] w-8 sm:w-12 bg-up-primary/60"></div>
+      </div>
+
+      <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white tracking-tight mb-3">
+        The <span class="italic gold-gradient-text font-bold">Culinary</span> List
+      </h1>
+
+      <p class="text-white/60 text-xs sm:text-sm font-light max-w-xl mx-auto leading-relaxed uppercase tracking-widest">
+        Artisanal Kenyan Harvest • Molecular Gastronomy • Seasonal Selection
+      </p>
+    </header>
+
+    <!-- STICKY CATEGORY & FILTER BAR -->
+    <div class="sticky top-4 z-40 py-3 px-3 sm:px-4 glass-sticky rounded-2xl mb-10 shadow-2xl border border-up-primary/30">
+      <div class="flex items-center justify-between gap-3">
+
+        <!-- Horizontal Scroll Category Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 w-full md:w-auto">
+          <button onclick="filterCategory('all', event)" class="cat-pill active bg-up-primary text-white px-4 py-2 rounded-xl text-xs uppercase tracking-widest font-bold whitespace-nowrap transition-all shadow-md">
+            All Items
+          </button>
+          <button onclick="filterCategory('starters', event)" class="cat-pill glass-card hover:border-up-primary text-white/80 hover:text-white px-4 py-2 rounded-xl text-xs uppercase tracking-widest font-medium whitespace-nowrap transition-all">
+            Starters
+          </button>
+          <button onclick="filterCategory('mains', event)" class="cat-pill glass-card hover:border-up-primary text-white/80 hover:text-white px-4 py-2 rounded-xl text-xs uppercase tracking-widest font-medium whitespace-nowrap transition-all">
+            Main Courses
+          </button>
+          <button onclick="filterCategory('specials', event)" class="cat-pill glass-card hover:border-up-primary text-white/80 hover:text-white px-4 py-2 rounded-xl text-xs uppercase tracking-widest font-medium whitespace-nowrap transition-all">
+            Chef's Specials
+          </button>
+          <button onclick="filterCategory('desserts', event)" class="cat-pill glass-card hover:border-up-primary text-white/80 hover:text-white px-4 py-2 rounded-xl text-xs uppercase tracking-widest font-medium whitespace-nowrap transition-all">
+            Desserts
+          </button>
+          <button onclick="filterCategory('cocktails', event)" class="cat-pill glass-card hover:border-up-primary text-white/80 hover:text-white px-4 py-2 rounded-xl text-xs uppercase tracking-widest font-medium whitespace-nowrap transition-all">
+            Drinks
+          </button>
+        </div>
+
+        <!-- Filter Actions (Vegan Filter Toggle & Order Drawer Button) -->
+        <div class="flex items-center gap-2.5 shrink-0">
+          <label class="hidden sm:flex items-center gap-2 cursor-pointer text-xs text-white/70 hover:text-white bg-white/5 px-3 py-2 rounded-xl border border-white/10">
+            <input type="checkbox" id="vegan-filter" onchange="applyFilters()" class="accent-up-primary rounded">
+            <span>🌱 Vegan</span>
+          </label>
+
+          <!-- Drawer Trigger Button -->
+          <button onclick="toggleCartDrawer()" class="glass-card hover:border-up-primary text-white px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs uppercase tracking-widest transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-up-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <span class="hidden sm:inline font-semibold">Selection</span>
+            <span id="cart-count-badge" class="bg-up-primary text-white font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center">0</span>
+          </button>
+        </div>
+
       </div>
     </div>
-    <span class="text-xs tracking-[0.2em] uppercase font-medium">MENU</span>
-  </div>
 
-  <!-- Mobile Hamburger -->
-  <button class="lg:hidden flex flex-col gap-[5px]" onclick="document.getElementById('mobile-menu').classList.remove('opacity-0', 'invisible'); document.body.style.overflow='hidden';">
-    <div class="w-6 h-[2px] bg-current"></div>
-    <div class="w-6 h-[2px] bg-current"></div>
-    <div class="w-4 h-[2px] bg-current"></div>
-  </button>
-</nav>
+    <!-- MENU CARDS GRID CONTAINER -->
+    <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
 
-<!-- MOBILE MENU OVERLAY -->
-<div id="mobile-menu" class="fixed inset-0 z-[100] bg-DARK opacity-0 invisible transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col">
-  <div class="flex justify-end px-6 sm:px-8 pt-8 sm:pt-12">
-    <button class="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center text-white hover:border-white transition-colors" onclick="document.getElementById('mobile-menu').classList.add('opacity-0', 'invisible'); document.body.style.overflow='';">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <div class="flex-1 flex flex-col justify-center px-8 sm:px-12 gap-6">
-    <a href="#" class="text-2xl sm:text-3xl font-light tracking-wide uppercase text-white hover:text-white transition-colors">Culinary Menu</a>
-    <a href="#" class="text-2xl sm:text-3xl font-light tracking-wide uppercase text-white/60 hover:text-white transition-colors">Reservations</a>
-    <a href="#" class="text-2xl sm:text-3xl font-light tracking-wide uppercase text-white/60 hover:text-white transition-colors">Locations</a>
-  </div>
-</div>
-
-<!-- SCROLL CONTAINER -->
-<!-- Making the container very tall to allow scrolling through the video -->
-<div id="scroll-container" class="relative z-10" style="height: 400vh;">
-
-  <!-- Section 1: Hero (Tied to scroll 0% - 25%) -->
-  <section id="section-1" class="fixed inset-0 flex flex-col justify-center px-6 sm:px-8 md:px-20 lg:px-32 transition-opacity duration-300 pointer-events-none">
-    <div class="pointer-events-auto">
-      <span class="stagger-item text-DARK text-sm tracking-[0.5em] uppercase mb-4 block" style="transition-delay: 0ms;">Seasonal Selection</span>
-      <h1 class="stagger-item text-[clamp(2rem,5vw,5rem)] font-light uppercase leading-[1.2] text-DARK max-w-4xl" style="transition-delay: 150ms;">
-        The Culinary List
-      </h1>
-      <p class="stagger-item text-sm tracking-[0.3em] uppercase text-DARK/90 mt-6" style="transition-delay: 300ms;">
-        Urban Palate Nairobi
-      </p>
-    </div>
-  </section>
-
-  <!-- Section 2 & Beyond: The Menu Items (Tied to scroll > 30%) -->
-  <section id="section-2" class="fixed inset-0 pt-32 pb-20 px-6 sm:px-8 md:px-20 lg:px-32 overflow-y-auto opacity-0 transition-opacity duration-300 pointer-events-none">
-    <div class="max-w-7xl mx-auto pointer-events-auto pb-40">
-
+      <!-- Django Template Rendering Loop -->
       {% for category in categories %}
         {% if category.items.all %}
-          <div class="mb-24 stagger-item">
-            <div class="flex flex-col mb-12 text-center md:text-left">
-              <h2 class="text-3xl md:text-4xl font-light tracking-wide text-white uppercase">{{ category.name }}</h2>
-              <div class="h-[1px] w-24 bg-white/30 mt-4 mx-auto md:mx-0"></div>
+          {% for item in category.items.all %}
+            <article class="menu-item-card glass-card rounded-3xl overflow-hidden group hover:border-up-primary transition-all duration-500 flex flex-col"
+                     data-category="{{ category.name|slugify }}"
+                     data-vegan="{{ item.is_vegan|yesno:'true,false' }}">
+
+              <!-- Dish Image Container -->
+              <div class="relative aspect-[4/3] overflow-hidden bg-black/40">
+                <img src="{{ item.image.url|default:'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80' }}"
+                     alt="{{ item.name }}"
+                     loading="lazy"
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
+
+                <!-- Price Badge -->
+                <div class="absolute top-4 right-4 glass-card px-3.5 py-1.5 rounded-full border border-up-primary/50">
+                  <span class="text-up-primary font-bold text-sm tracking-wide">
+                    {{ item.price|floatformat:0|default:"2,400" }} <span class="text-[10px] text-white/70 font-normal">KES</span>
+                  </span>
+                </div>
+
+                <!-- Dietary Badges -->
+                <div class="absolute bottom-4 left-4 flex gap-2">
+                  {% if item.is_vegan %}
+                    <span class="glass-card text-[10px] px-2.5 py-1 rounded-full text-emerald-400 font-medium tracking-wide">🌱 Vegan</span>
+                  {% endif %}
+                  {% if item.spiciness > 5 %}
+                    <span class="glass-card text-[10px] px-2.5 py-1 rounded-full text-amber-400 font-medium tracking-wide">🔥 Spicy</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Content Body -->
+              <div class="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 class="font-serif text-xl sm:text-2xl text-white font-medium group-hover:text-up-primary transition-colors mb-2">
+                    {{ item.name }}
+                  </h3>
+
+                  <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-6 line-clamp-2">
+                    {{ item.description|default:"Chef handcrafted creation using locally sourced highland ingredients and aromatic herbs." }}
+                  </p>
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between text-[11px] uppercase tracking-widest text-white/50 mb-5 pb-3 border-b border-white/10">
+                    <span>Prep: {{ item.prep_time|default:"20" }} mins</span>
+                    <span class="text-up-primary font-medium">Chef Selection</span>
+                  </div>
+
+                  <!-- Django Cart Submission Form -->
+                  <form method="post" action="{% url 'orders:add_to_cart' item.id %}" onsubmit="handleAddToCart(event, '{{ item.name|escapejs }}', {{ item.price|default:2400 }})">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-up-primary text-white text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 border border-up-primary/40 hover:border-transparent">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-up-primary group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Add to Experience
+                    </button>
+                  </form>
+                </div>
+
+              </div>
+            </article>
+          {% endfor %}
+        {% endif %}
+      {% empty %}
+
+        <!-- STANDALONE PREVIEW FALLBACK DISHES (Shown when viewed without active Django server context) -->
+        <!-- Dish 1: Wagyu Ribeye -->
+        <article class="menu-item-card glass-card rounded-3xl overflow-hidden group hover:border-up-primary transition-all duration-500 flex flex-col" data-category="mains">
+          <div class="relative aspect-[4/3] overflow-hidden bg-black/40">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="Truffle Glazed Wagyu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
+            <div class="absolute top-4 right-4 glass-card px-3.5 py-1.5 rounded-full border border-up-primary/50">
+              <span class="text-up-primary font-bold text-sm tracking-wide">4,800 <span class="text-[10px] text-white/70 font-normal">KES</span></span>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-              {% for item in category.items.all %}
-                <article class="glass-card rounded-xl overflow-hidden group">
-                  <div class="relative aspect-[4/3] overflow-hidden">
-                    <div id="skeleton-{{ item.id }}" class="absolute inset-0 animate-pulse bg-white/5 flex items-center justify-center">
-                      <span class="text-white/20 text-xs tracking-widest uppercase">Loading</span>
-                    </div>
-
-                    {% if item.image %}
-                      <img src="{{ item.image.url }}"
-                           alt="{{ item.name }}"
-                           onload="document.getElementById('skeleton-{{ item.id }}').remove();"
-                           class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700">
-                    {% endif %}
-
-                    <div class="absolute top-4 right-4 glass-card px-4 py-2 rounded-full">
-                      <span class="text-white font-light text-sm tracking-wider">
-                        {{ item.price|floatformat:0 }}<span class="text-[10px] ml-1 text-white/70 uppercase">Kes</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="p-6 md:p-8">
-                    <div class="flex justify-between items-start mb-4">
-                      <h3 class="text-xl font-light text-white tracking-wide uppercase">{{ item.name }}</h3>
-                      <div class="flex gap-2 text-sm">
-                        {% if item.is_vegan %}<span title="Vegan">🌿</span>{% endif %}
-                        {% if item.spiciness > 5 %}<span title="Spicy">🔥</span>{% endif %}
-                      </div>
-                    </div>
-
-                    <p class="text-xs text-white/50 mb-8 tracking-[0.2em] uppercase">
-                      Prep: {{ item.prep_time }} MINS
-                    </p>
-
-                    <form method="post" action="{% url 'orders:add_to_cart' item.id %}">
-                      {% csrf_token %}
-                      <button type="submit" class="w-full py-4 border border-white/20 hover:bg-white hover:text-black text-white text-[10px] font-medium uppercase tracking-[0.2em] transition-all duration-500">
-                        Add to Experience
-                      </button>
-                    </form>
-                  </div>
-                </article>
-              {% endfor %}
+            <div class="absolute bottom-4 left-4 flex gap-2">
+              <span class="glass-card text-[10px] px-2.5 py-1 rounded-full text-up-primary font-medium tracking-wide">★ Signature</span>
             </div>
           </div>
-        {% endif %}
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-serif text-xl sm:text-2xl text-white font-medium group-hover:text-up-primary transition-colors mb-2">Truffle Glazed Wagyu</h3>
+              <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-6">28-day dry aged A5 Wagyu ribeye, smoked marrow reduction, roasted baby root vegetables.</p>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-[11px] uppercase tracking-widest text-white/50 mb-5 pb-3 border-b border-white/10">
+                <span>Prep: 25 mins</span>
+                <span class="text-up-primary">Chef's Pick</span>
+              </div>
+              <button onclick="handleAddToCart(event, 'Truffle Glazed Wagyu', 4800)" class="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-up-primary text-white text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 border border-up-primary/40">
+                <span>Add to Experience</span>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dish 2: Pan-Seared Salmon -->
+        <article class="menu-item-card glass-card rounded-3xl overflow-hidden group hover:border-up-primary transition-all duration-500 flex flex-col" data-category="mains">
+          <div class="relative aspect-[4/3] overflow-hidden bg-black/40">
+            <img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=800&q=80" alt="Crispy Skin Salmon" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
+            <div class="absolute top-4 right-4 glass-card px-3.5 py-1.5 rounded-full border border-up-primary/50">
+              <span class="text-up-primary font-bold text-sm tracking-wide">3,400 <span class="text-[10px] text-white/70 font-normal">KES</span></span>
+            </div>
+            <div class="absolute bottom-4 left-4 flex gap-2">
+              <span class="glass-card text-[10px] px-2.5 py-1 rounded-full text-emerald-400 font-medium tracking-wide">Gluten Free</span>
+            </div>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-serif text-xl sm:text-2xl text-white font-medium group-hover:text-up-primary transition-colors mb-2">Crispy Skin Salmon</h3>
+              <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-6">Wild-caught Atlantic salmon, lemon herb emulsion, asparagus velvet, sea asparagus garnish.</p>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-[11px] uppercase tracking-widest text-white/50 mb-5 pb-3 border-b border-white/10">
+                <span>Prep: 18 mins</span>
+                <span>Fresh Seafood</span>
+              </div>
+              <button onclick="handleAddToCart(event, 'Crispy Skin Salmon', 3400)" class="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-up-primary text-white text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 border border-up-primary/40">
+                <span>Add to Experience</span>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dish 3: Wild Mushroom Risotto -->
+        <article class="menu-item-card glass-card rounded-3xl overflow-hidden group hover:border-up-primary transition-all duration-500 flex flex-col" data-category="starters" data-vegan="true">
+          <div class="relative aspect-[4/3] overflow-hidden bg-black/40">
+            <img src="https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=800&q=80" alt="Forest Mushroom Risotto" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
+            <div class="absolute top-4 right-4 glass-card px-3.5 py-1.5 rounded-full border border-up-primary/50">
+              <span class="text-up-primary font-bold text-sm tracking-wide">2,600 <span class="text-[10px] text-white/70 font-normal">KES</span></span>
+            </div>
+            <div class="absolute bottom-4 left-4 flex gap-2">
+              <span class="glass-card text-[10px] px-2.5 py-1 rounded-full text-emerald-400 font-medium tracking-wide">🌱 Vegan</span>
+            </div>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-serif text-xl sm:text-2xl text-white font-medium group-hover:text-up-primary transition-colors mb-2">Forest Mushroom Velvet</h3>
+              <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-6">Carnaroli rice, porcini dust, black truffle oil, crispy sage, cashew parmigiano cream.</p>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-[11px] uppercase tracking-widest text-white/50 mb-5 pb-3 border-b border-white/10">
+                <span>Prep: 20 mins</span>
+                <span class="text-emerald-400">Plant Based</span>
+              </div>
+              <button onclick="handleAddToCart(event, 'Forest Mushroom Velvet', 2600)" class="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-up-primary text-white text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 border border-up-primary/40">
+                <span>Add to Experience</span>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dish 4: Smoked Beef Tartare -->
+        <article class="menu-item-card glass-card rounded-3xl overflow-hidden group hover:border-up-primary transition-all duration-500 flex flex-col" data-category="starters">
+          <div class="relative aspect-[4/3] overflow-hidden bg-black/40">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="Smoked Beef Tartare" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
+            <div class="absolute top-4 right-4 glass-card px-3.5 py-1.5 rounded-full border border-up-primary/50">
+              <span class="text-up-primary font-bold text-sm tracking-wide">2,800 <span class="text-[10px] text-white/70 font-normal">KES</span></span>
+            </div>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-serif text-xl sm:text-2xl text-white font-medium group-hover:text-up-primary transition-colors mb-2">Oak-Smoked Beef Tartare</h3>
+              <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-6">Hand-cut highland beef, cured egg yolk, caper berries, sourdough crisp.</p>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-[11px] uppercase tracking-widest text-white/50 mb-5 pb-3 border-b border-white/10">
+                <span>Prep: 15 mins</span>
+                <span>Appetizer</span>
+              </div>
+              <button onclick="handleAddToCart(event, 'Oak-Smoked Beef Tartare', 2800)" class="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-up-primary text-white text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 border border-up-primary/40">
+                <span>Add to Experience</span>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dish 5: Gold Leaf Dark Chocolate Sphere -->
+        <article class="menu-item-card glass-card rounded-3xl overflow-hidden group hover:border-up-primary transition-all duration-500 flex flex-col" data-category="desserts">
+          <div class="relative aspect-[4/3] overflow-hidden bg-black/40">
+            <img src="https://images.unsplash.com/photo-1579372786545-d24232daf58c?auto=format&fit=crop&w=800&q=80" alt="24K Obsidian Sphere" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
+            <div class="absolute top-4 right-4 glass-card px-3.5 py-1.5 rounded-full border border-up-primary/50">
+              <span class="text-up-primary font-bold text-sm tracking-wide">1,900 <span class="text-[10px] text-white/70 font-normal">KES</span></span>
+            </div>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-serif text-xl sm:text-2xl text-white font-medium group-hover:text-up-primary transition-colors mb-2">24K Obsidian Sphere</h3>
+              <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-6">Valrhona 70% dark chocolate dome, hazelnut praline, poured hot espresso caramel.</p>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-[11px] uppercase tracking-widest text-white/50 mb-5 pb-3 border-b border-white/10">
+                <span>Prep: 12 mins</span>
+                <span class="text-up-primary">Decadent</span>
+              </div>
+              <button onclick="handleAddToCart(event, '24K Obsidian Sphere', 1900)" class="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-up-primary text-white text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 border border-up-primary/40">
+                <span>Add to Experience</span>
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Dish 6: Smoky Old Fashioned -->
+        <article class="menu-item-card glass-card rounded-3xl overflow-hidden group hover:border-up-primary transition-all duration-500 flex flex-col" data-category="cocktails">
+          <div class="relative aspect-[4/3] overflow-hidden bg-black/40">
+            <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80" alt="Nairobi Smoked Sour" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
+            <div class="absolute top-4 right-4 glass-card px-3.5 py-1.5 rounded-full border border-up-primary/50">
+              <span class="text-up-primary font-bold text-sm tracking-wide">1,800 <span class="text-[10px] text-white/70 font-normal">KES</span></span>
+            </div>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-serif text-xl sm:text-2xl text-white font-medium group-hover:text-up-primary transition-colors mb-2">Nairobi Smoked Sour</h3>
+              <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-6">Single malt whiskey, wild honey, fresh lemon juice, infused with cedarwood smoke.</p>
+            </div>
+            <div>
+              <div class="flex items-center justify-between text-[11px] uppercase tracking-widest text-white/50 mb-5 pb-3 border-b border-white/10">
+                <span>Mix: 5 mins</span>
+                <span class="text-up-primary">Signature Bar</span>
+              </div>
+              <button onclick="handleAddToCart(event, 'Nairobi Smoked Sour', 1800)" class="w-full py-3.5 rounded-2xl bg-white/5 hover:bg-up-primary text-white text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 flex items-center justify-center gap-2 border border-up-primary/40">
+                <span>Add to Experience</span>
+              </button>
+            </div>
+          </div>
+        </article>
+
       {% endfor %}
 
     </div>
-  </section>
+  </div>
+
+  <!-- SELECTION / CART DRAWER PANEL -->
+  <div id="cart-drawer" class="fixed inset-y-0 right-0 w-full sm:w-[420px] z-[120] bg-[#0B0C0E]/95 backdrop-blur-2xl border-l border-up-primary/30 transform translate-x-full transition-transform duration-500 ease-in-out flex flex-col justify-between p-6">
+    <div>
+      <div class="flex items-center justify-between pb-6 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-up-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+          <h3 class="font-serif text-xl text-white font-medium">Selected Dishes</h3>
+        </div>
+        <button onclick="toggleCartDrawer()" class="w-8 h-8 rounded-full glass-card flex items-center justify-center text-white hover:border-up-primary">
+          ✕
+        </button>
+      </div>
+
+      <!-- Selected Items Container -->
+      <div id="cart-items-container" class="py-6 flex flex-col gap-4 max-h-[60vh] overflow-y-auto no-scrollbar">
+        <div id="cart-empty-msg" class="text-center py-12 text-white/40 text-xs uppercase tracking-widest leading-relaxed">
+          Your selection is currently empty.<br>Add dishes from the menu to build your experience.
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="pt-6 border-t border-white/10">
+      <div class="flex justify-between items-center mb-6">
+        <span class="text-xs uppercase tracking-widest text-white/60">Total Order</span>
+        <span id="cart-total-price" class="font-serif text-2xl text-up-primary font-bold">0 KES</span>
+      </div>
+      <button onclick="handleCheckout()" class="w-full py-4 rounded-2xl bg-up-primary text-white font-bold text-xs uppercase tracking-[0.2em] hover:brightness-110 transition-all shadow-lg gold-glow">
+        Send Order to Kitchen
+      </button>
+    </div>
+  </div>
 
 </div>
 
-<!-- Scroll & Video Logic -->
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  let cartItems = [];
+  let cartTotal = 0;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initEmberParticles();
+    initVideoScrubbing();
+  });
+
+  // Ember Canvas Animation
+  function initEmberParticles() {
+    const canvas = document.getElementById('embers-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = Array.from({ length: 35 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height + height,
+      size: Math.random() * 2.2 + 0.5,
+      speedY: Math.random() * 0.7 + 0.3,
+      speedX: (Math.random() - 0.5) * 0.4,
+      opacity: Math.random() * 0.6 + 0.2
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(166, 124, 82, ${p.opacity})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#a67c52';
+        ctx.fill();
+
+        p.y -= p.speedY;
+        p.x += p.speedX;
+
+        if (p.y < -10) {
+          p.y = height + 10;
+          p.x = Math.random() * width;
+        }
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  // Scroll Scrubbing Engine for Culinary Video
+  function initVideoScrubbing() {
     const video = document.getElementById('bg-video');
-    const nav = document.getElementById('navbar');
-    const s1 = document.getElementById('section-1');
-    const s2 = document.getElementById('section-2');
-    const staggerItems = document.querySelectorAll('.stagger-item');
+    if (!video) return;
 
     let targetTime = 0;
     let currentTime = 0;
-    const LERP_TAU = 8;
-    let lastTime = performance.now();
+    const lerpFactor = 0.08;
 
-    // Ensure video is loaded to get duration
-    video.addEventListener('loadedmetadata', () => {
-      requestAnimationFrame(renderLoop);
-    });
+    function loop() {
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollProgress = Math.max(0, Math.min(1, window.scrollY / (scrollHeight || 1)));
 
-    // Fallback if metadata is already loaded
-    if(video.readyState >= 1) {
-      requestAnimationFrame(renderLoop);
-    }
-
-    function renderLoop(time) {
-      const deltaSeconds = (time - lastTime) / 1000;
-      lastTime = time;
-      const dt = Math.min(0.1, deltaSeconds);
-
-      // Calculate scroll progress (0 to 1)
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      let p = Math.max(0, Math.min(1, window.scrollY / maxScroll));
-
-      // Update Target Time based on progress
       if (video.duration) {
-        targetTime = p * video.duration;
+        targetTime = scrollProgress * video.duration;
+        currentTime += (targetTime - currentTime) * lerpFactor;
 
-        // Lerp logic for smooth scrubbing
-        currentTime += (targetTime - currentTime) * (1 - Math.exp(-dt * LERP_TAU));
-        if (Math.abs(targetTime - currentTime) < 0.002) currentTime = targetTime;
-
-        // Only update video time if it significantly changed
-        if (Math.abs(video.currentTime - currentTime) > 0.01) {
+        if (Math.abs(video.currentTime - currentTime) > 0.02) {
           video.currentTime = currentTime;
         }
       }
-
-      // SECTION OPACITY LOGIC (Matching the cinematic prompt phases)
-      // Phase 1 (Hero): 0 -> 25%
-      if (p < 0.15) {
-        s1.style.opacity = 1;
-        s1.style.pointerEvents = 'auto';
-        nav.classList.replace('text-white', 'text-DARK');
-      } else {
-        s1.style.opacity = Math.max(0, 1 - (p - 0.15) / 0.10);
-        if (s1.style.opacity == 0) s1.style.pointerEvents = 'none';
-      }
-
-      // Phase 2 (Menu): 30% -> End
-      if (p < 0.25) {
-        s2.style.opacity = 0;
-        s2.style.pointerEvents = 'none';
-      } else {
-        s2.style.opacity = Math.min(1, (p - 0.25) / 0.10);
-        s2.style.pointerEvents = 'auto';
-        nav.classList.replace('text-DARK', 'text-white');
-      }
-
-      // Stagger Animations based on section opacity
-      if (parseFloat(s1.style.opacity) > 0.3) {
-        s1.querySelectorAll('.stagger-item').forEach(el => el.classList.add('visible'));
-      } else {
-        s1.querySelectorAll('.stagger-item').forEach(el => el.classList.remove('visible'));
-      }
-
-      if (parseFloat(s2.style.opacity) > 0.3) {
-        s2.querySelectorAll('.stagger-item').forEach(el => el.classList.add('visible'));
-      } else {
-        s2.querySelectorAll('.stagger-item').forEach(el => el.classList.remove('visible'));
-      }
-
-      requestAnimationFrame(renderLoop);
+      requestAnimationFrame(loop);
     }
-  });
+
+    video.addEventListener('loadedmetadata', () => requestAnimationFrame(loop));
+    if (video.readyState >= 1) requestAnimationFrame(loop);
+  }
+
+  // Category Filter Pills Handler
+  function filterCategory(cat, event) {
+    document.querySelectorAll('.cat-pill').forEach(btn => {
+      btn.classList.remove('bg-up-primary', 'text-white', 'active');
+      btn.classList.add('glass-card', 'text-white/80');
+    });
+
+    if (event && event.currentTarget) {
+      event.currentTarget.classList.add('bg-up-primary', 'text-white', 'active');
+      event.currentTarget.classList.remove('glass-card', 'text-white/80');
+    }
+
+    const cards = document.querySelectorAll('.menu-item-card');
+    cards.forEach(card => {
+      if (cat === 'all' || card.dataset.category === cat) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  function applyFilters() {
+    const veganOnly = document.getElementById('vegan-filter').checked;
+    const cards = document.querySelectorAll('.menu-item-card');
+    cards.forEach(card => {
+      if (veganOnly && card.dataset.vegan !== 'true') {
+        card.style.display = 'none';
+      } else {
+        card.style.display = 'flex';
+      }
+    });
+  }
+
+  // Drawer & Cart Interactions
+  function toggleCartDrawer() {
+    const drawer = document.getElementById('cart-drawer');
+    drawer.classList.toggle('translate-x-full');
+  }
+
+  function handleAddToCart(e, name, price) {
+    if (e) e.preventDefault();
+    cartItems.push({ name, price });
+    cartTotal += price;
+    updateCartUI();
+    toggleCartDrawer();
+  }
+
+  function updateCartUI() {
+    const container = document.getElementById('cart-items-container');
+    const badge = document.getElementById('cart-count-badge');
+    const totalEl = document.getElementById('cart-total-price');
+
+    badge.innerText = cartItems.length;
+    totalEl.innerText = cartTotal.toLocaleString() + ' KES';
+
+    if (cartItems.length === 0) {
+      container.innerHTML = '<div class="text-center py-12 text-white/40 text-xs uppercase tracking-widest leading-relaxed">Your selection is currently empty.<br>Add dishes from the menu.</div>';
+      return;
+    }
+
+    container.innerHTML = cartItems.map((item, i) => `
+      <div class="glass-card p-4 rounded-2xl flex justify-between items-center">
+        <div>
+          <h4 class="font-serif text-sm text-white font-medium">${item.name}</h4>
+          <span class="text-xs text-up-primary font-bold">${item.price.toLocaleString()} KES</span>
+        </div>
+        <button onclick="removeItem(${i})" class="text-white/40 hover:text-red-400 text-xs px-2 py-1 transition-colors">Remove</button>
+      </div>
+    `).join('');
+  }
+
+  function removeItem(index) {
+    cartTotal -= cartItems[index].price;
+    cartItems.splice(index, 1);
+    updateCartUI();
+  }
+
+  function handleCheckout() {
+    if (cartItems.length === 0) return;
+    const drawer = document.getElementById('cart-drawer');
+    drawer.classList.add('translate-x-full');
+  }
 </script>
-{% endblock %}
+{% endblock content %}
